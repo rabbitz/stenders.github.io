@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+body{
+	font-family: "Microsoft Yahei";
+}
+.hero-unit ul{
+	list-style: none;
+	margin-left: 0;
+}
+.hero-unit li{
+	margin: 10px 0;
+}
+.hero-unit span{
+	display: inline-block;
+	width: 110px;
+	text-align: justify;
+}
+.icon-code-fork{
+	margin-left: 4px;
+}
+.hero-unit ol li{
+	margin: 0;
+}
+.thumbnail{
+	font-size: 14px;
+	word-wrap: break-word;
+}
+.gotop{
+	background: #000;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+	display: block;
+	width: 50px;
+	height: 50px;
+	position: fixed;
+	right: 10px;
+	bottom: 10%;
+	text-align: center;
+	line-height: 50px;
+	font-size: 30px;
+	color: #fff;
+	display: none;
+}
+.gotop:hover{
+	opacity: .8;
+	color: #fff;
+	filter: alpha(opacity=80);
+	text-decoration: none;
+}
