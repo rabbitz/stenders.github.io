@@ -1,9 +1,5 @@
 
-jQuery(($)->
-
-	$$ = (id) ->
-		document.getElementById id
-	$$('token').src = $$('photo').value
+jQuery ($)->
 
 	win = $ window
 	scrolling = false
@@ -38,16 +34,16 @@ jQuery(($)->
 		body.animate 'scrollTop': 0, 300
 
 	threed = $ '#threed'
-	css = $$ 'css3d'
+	css = $ '#css3d'
 	flag = true
 	wrapper = $ '.wrapper'
 	threed.on 'click', ->
 		if flag
 			@.innerText = '关闭3D'
-			css.href = 'css/3d.css'
+			css.attr 'href', 'css/3d.css'
 		else
 			@.innerText = '3D导航'
-			css.href = ''
+			css.attr 'href', ''
 			wrapper.removeClass().addClass 'wrapper'
 		togClass nav.find('li').eq(0)
 		flag = !flag
@@ -63,4 +59,4 @@ jQuery(($)->
 			body.animate 'scrollTop': heros.eq(index).offset().top, 300
 		return
 
-	return)
+	return

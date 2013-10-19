@@ -47,3 +47,14 @@ body{
 	filter: alpha(opacity=80);
 	text-decoration: none;
 }
+@media (max-width: 600px) {
+	img.pull-right{
+		float: none;
+	}
+}
+@media (max-width: 979px){
+	.row-fluid li.span3{
+		margin: 2px 0;
+		width: 100%;
+	}
+}

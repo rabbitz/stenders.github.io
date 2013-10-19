@@ -108,3 +108,9 @@ h2.text-center{
 	-o-transform: rotateX(180deg) rotateZ(-90deg);
 	transform: rotateX(180deg) rotateZ(-90deg);
 }
+.rotate-3 h2,.rotate-3 h3,.rotate-3 p,.rotate-3 .span3{
+	margin: 2px 0;
+}
+.rotate-3 .span3{
+	width: 100%;
+}
