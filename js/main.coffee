@@ -8,13 +8,6 @@ jQuery ($)->
 	heros = $ '.hero-unit'
 	nav = $ '.nav'
 	li = nav.find 'li'
-
-	obj = document.createElement 'object'
-	obj.width = 0
-	obj.height = 0
-	obj.data = 'css/3d.css'
-	document.body.appendChild(obj)
-
 	arr = $.map heros, (hero) ->
 		$(hero).offset().top
 

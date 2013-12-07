@@ -36,6 +36,7 @@ body{
 	right: 10px;
 	bottom: 10%;
 	text-align: center;
+	text-decoration: none;
 	line-height: 50px;
 	font-size: 30px;
 	color: #fff;
@@ -43,9 +44,7 @@ body{
 }
 .gotop:hover{
 	opacity: .8;
-	color: #fff;
 	filter: alpha(opacity=80);
-	text-decoration: none;
 }
 @media (max-width: 600px) {
 	img.pull-right{
