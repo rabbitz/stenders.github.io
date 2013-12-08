@@ -13,4 +13,5 @@ Thumbs.db
 .project
 node_modules
 .*/
-edit.md.html
+demo.html
+md/

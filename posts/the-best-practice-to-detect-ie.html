@@ -20,14 +20,14 @@
       <li class="active"><a href="/">Home</a></li>
       <!-- <li><a href="./resume.html">About</a></li> -->
     </ul>
-    <h3 class="text-muted"><a href="/">砸牛顿的大苹果</a></h3>
+    <h3 class="text-muted"><a href="/">砸牛顿的大苹果的果园</a></h3>
   </nav>
 </header>
 <div class="container">
   <div class="row marketing">
     <h2><a href="javascript:location.reload();">JavaScript判断IE各版本最完美解决方案</a></h2>
     
-<p>jQuery在1.9版本之前，提供了一个浏览器对象检测的属性$.browser，使用率极高。但是在1.9版本发布之后，大家钟爱的这个属性被jQuery无情的抛弃了。大家开始着手寻找$.browser的替代方案。于是各种利用IE bug的检测方法被搜了出来：</p>
+<p>jQuery在1.9版本之前，提供了一个浏览器对象检测的属性<code>$.browser</code>，使用率极高。但是在1.9版本发布之后，大家钟爱的这个属性被jQuery无情的抛弃了。大家开始着手寻找<code>$.browser</code>的替代方案。于是各种利用IE bug的检测方法被搜了出来：</p>
 
 <pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="com">// shortest from a Russian</span><span class="pln">
 </span><span class="kwd">var</span><span class="pln"> ie </span><span class="pun">=</span><span class="pln"> </span><span class="pun">!-[</span><span class="lit">1</span><span class="pun">,]</span><span class="pln">
@@ -44,7 +44,7 @@
 </span><span class="com">// Option to Gareth Hayes (former record-holder):</span><span class="pln">
 </span><span class="kwd">var</span><span class="pln"> ie </span><span class="pun">=</span><span class="pln"> </span><span class="pun">!+</span><span class="str">"\v1"</span></code></pre>
 
-<p>还有一些读取navigator.userAgent的方式，在苹果看来这些写法都不够友好，也不容易记忆，在搜索和挑选之后，终于找到了一个容易理解且友好方便的写法！</p>
+<p>还有一些读取<code>navigator.userAgent</code>的方式，在苹果看来这些写法都不够友好，也不容易记忆，在搜索和挑选之后，终于找到了一个容易理解且友好方便的写法！</p>
 
 <h2 id="解决方案">解决方案</h2>
 
@@ -66,8 +66,8 @@
     </span><span class="kwd">return</span><span class="pln"> b</span><span class="pun">.</span><span class="pln">getElementsByTagName</span><span class="pun">(</span><span class="str">'i'</span><span class="pun">).</span><span class="pln">length </span><span class="pun">===</span><span class="pln"> </span><span class="lit">1</span><span class="pln">
 </span><span class="pun">}</span></code></pre>
 
-<p>这也太巧妙了！首先生成了一个b元素，设置它的innerHTML为一坨只有IE才认识的注释，注释里只有一个空的<i></i>标签，然后读取里面的出现的元素i的个数是不是等于1，是不是等于1，是不是等于1。。。。
-在大苹果看来，这样的写法比其它任何一种都要好。至于为什么生成一个b元素并且里面写一个i元素而不是div或者strong，更多是考虑到前者字节量更小。
+<p>这也太巧妙了！首先生成了一个<code>b</code>元素，设置它的<code>innerHTML</code>为一坨只有IE才认识的注释，注释里只有一个空的<code>i</code>标签，然后读取里面的出现的元素<code>i</code>的个数是不是等于1，是不是等于1，是不是等于1。。。。</p><p>
+个人觉得，这样的写法比其它任何一种都要好。至于为什么生成一个<code>b</code>元素并且里面写一个<code>i</code>元素而不是<code>div</code>或者<code>strong</code>，更多是考虑到前者字节量更小。
 检测各个IE版本的方法也就顺理成章了：</p>
 
 <pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> isIE6 </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
@@ -80,7 +80,7 @@
 
 <h2 id="更进一步">更进一步</h2>
 
-<p>在苹果看来，还可以进一步将版本号提取成参数，就能生成一个通用的检测IE版本的函数了：</p>
+<p>还可以进一步将版本号提取成参数，就能生成一个通用的检测IE版本的函数了：</p>
 
 <pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> isIE </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">ver</span><span class="pun">){</span><span class="pln">
     </span><span class="kwd">var</span><span class="pln"> b </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">createElement</span><span class="pun">(</span><span class="str">'b'</span><span class="pun">)</span><span class="pln">
@@ -107,7 +107,7 @@
 <img src="https://f.cloud.github.com/assets/1066610/1335093/3b8bee0e-35b3-11e3-9082-b25e4c90ab30.png" alt="chrome" title=""><img src="https://f.cloud.github.com/assets/1066610/1335095/444f2e48-35b3-11e3-9832-a8d5a2ebbbad.png" alt="ff" title="">
 <img src="https://f.cloud.github.com/assets/1066610/1335094/3fa04832-35b3-11e3-8c4e-e2f81ad84cdf.png" alt="safari" title=""></p>
 
-<p>PS：这样性感的写法让其他又要检测userAgent又要匹配版本号的方法黯然失色。</p>
+<p>PS：这样性感的写法让其他又要检测<code>userAgent</code>又要匹配版本号的方法黯然失色。</p>
 
   </div>
 </div>
