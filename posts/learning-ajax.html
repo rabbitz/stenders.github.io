@@ -89,7 +89,7 @@
 
 <pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">send</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">)</span></code></pre>
 
-<p><code>send</code>方法接受一个参数，表示作为请求主题发送的数据，如果不需要发送数据，则为了浏览器的兼容性，需要发送参数<code>null</code>。至此，一次完整的请求发送完毕。等待服务器响应之后，会填充<code>xhr</code>的其他属性：</p>
+<p><code>send</code>方法接受一个参数，表示作为请求主体发送的数据，如果不需要发送数据，则为了浏览器的兼容性，需要发送参数<code>null</code>。至此，一次完整的请求发送完毕。等待服务器响应之后，会填充<code>xhr</code>的其他属性：</p>
 
 <ol>
 <li>xhr.responseText：作为响应主体返回的文本。</li>
