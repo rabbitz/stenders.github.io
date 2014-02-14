@@ -63,3 +63,34 @@ img{
 	box-shadow: 5px 5px 10px rgba(0,0,0,0.5);
 }
 a img{display:none;}
+
+@-webkit-keyframes heartbeat{
+	to {-webkit-transform: scale(1.5);}
+}
+@-moz-keyframes heartbeat{
+	to {-moz-transform: scale(1.5);}
+}
+@keyframes heartbeat{
+	to {transform: scale(1.5);}
+}
+.heart{
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+	-webkit-animation: heartbeat .4s alternate infinite;
+	-moz-animation: heartbeat .4s alternate infinite;
+	animation: heartbeat .4s alternate infinite;
+	-webkit-animation-play-state: running;
+	-moz-animation-play-state: running;
+	animation-play-state: running;
+}
+.heart:hover{
+	-webkit-animation-play-state: paused;
+	-moz-animation-play-state: paused;
+	animation-play-state: paused;
+}
+.heart:last-child{
+	-webkit-animation-delay: .4s;
+	-moz-animation-delay: .4s;
+	animation-delay: .4s;
+}
