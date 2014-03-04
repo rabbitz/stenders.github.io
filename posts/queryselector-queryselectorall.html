@@ -5,8 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HTML5 两个新增的API笔记</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -25,96 +26,73 @@
 </header>
 <div class="container">
   <div class="row marketing">
-    <h2><a href="javascript:location.reload();">HTML5 两个新增的API笔记</a></h2>
+    
+    <h1>HTML5 两个新增的API笔记</h1>
+<h3>1.<code>querySelector</code>和<code>querySelectorAll</code>方法</h3>
+<p>HTML5中新增了两个DOM选择器 <code>querySelector</code> 和 <code>querySelectorAll</code> 。他们的选择效率问题有大牛们专门对它们跟其他选择器<code>getElementsByTagName</code>和 <code>getElementsByClassName</code> 等做过<a href="https://speakerdeck.com/lijing00333/css-selector-performance">对比</a>。</p>
+<p><code>querySelector</code>和<code>querySelectorAll</code>的用法，即接收的参数几乎和<a href="http://jquery.com/">jQuery</a>的<code>$()</code>选择器没什么两样， 支持<code>&#39;div&#39;</code>,<code>&#39;#id&#39;</code>,<code>&#39;.class&#39;</code>,<code>&#39;[attr=value]&#39;</code>等。它们两者之间的差异也是很明显的，前者返回的是第一个匹配的节点；后者返回的是所有匹配到的<code>nodeList</code>，这与<code>getElementsByTagName</code>的返回值类型相同。它们都可以用方括号方式读取其中的每个值，同样也可以用<code>item</code>来读取。它们也都有<code>length</code>属性，但它们都不是真正的数组，当然也不具有数组的特有的方法（比如<code>push</code>，<code>sort</code>等），这点与jQuery的返回值类似。比如：</p>
+<pre><code>var archor = document.querySelector(&#39;a&#39;);
+archor.className = &#39;reached&#39;;
 
-
-<h3 id="queryselector和queryselectorall方法">1.<code>querySelector</code>和<code>querySelectorAll</code>方法</h3>
-
-<p>HTML5中新增了两个DOM选择器 <code>querySelector</code> 和 <code>querySelectorAll</code> 。他们的选择效率问题有人专门对它们跟其他选择器<code>getElementsByTagName</code>和 <code>getElementsByClassName</code> 等做过<a href="https://speakerdeck.com/lijing00333/css-selector-performance">对比</a>。</p>
-
-<p><code>querySelector</code>和<code>querySelectorAll</code>的用法，即接收的参数几乎和jQuery的<code>$()</code>选择器没什么两样， 支持<code>'div'</code>,<code>'#id'</code>,<code>'.class'</code>,<code>'[attr=value]'</code>等。它们两者之间的差异也是很明显的，前者返回的是第一个匹配的节点；后者返回的是所有匹配到的<code>nodeList</code>，这与<code>getElementsByTagName</code>的返回值类型相同。它们都可以用方括号方式读取其中的每个值，同样也可以用<code>item</code>来读取。它们也都有<code>length</code>属性，但它们都不是真正的数组，当然也不具有数组的特有的方法（比如<code>push</code>，<code>sort</code>等），这点与jQuery的返回值类似。比如：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="kwd">var</span><span class="pln"> archor </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">querySelector</span><span class="pun">(</span><span class="str">'a'</span><span class="pun">);</span><span class="pln">
-archor</span><span class="pun">.</span><span class="pln">className </span><span class="pun">=</span><span class="pln"> </span><span class="str">'reached'</span><span class="pun">;</span><span class="pln">
-
-</span><span class="kwd">var</span><span class="pln"> archors </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">querySelectorAll</span><span class="pun">(</span><span class="str">'a'</span><span class="pun">);</span><span class="pln">
-</span><span class="kwd">for</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> archors</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    archors</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="pln">className </span><span class="pun">=</span><span class="pln"> </span><span class="str">'reached'</span><span class="pun">;</span><span class="pln">
-    </span><span class="com">// archors.item(i).className = 'reached';</span><span class="pln">
-</span><span class="pun">};</span></code></pre>
-
+var archors = document.querySelectorAll(&#39;a&#39;);
+for (var i = 0; i &lt; archors.length; i ++) {
+    archors[i].className = &#39;reached&#39;;
+    // archors.item(i).className = &#39;reached&#39;;
+};</code></pre>
 <p>可以将<code>archors</code>转化为真正的数组，而使他们具有数组特有的方法：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pln">archors </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">archors</span><span class="pun">);</span><span class="pln">
-archors</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="lit">1</span><span class="pun">,</span><span class="lit">2</span><span class="pun">,</span><span class="lit">3</span><span class="pun">);</span></code></pre>
-
-<h3 id="classlist属性">2. <code>classList</code>属性</h3>
-
-<p>节点上都有一个<code>className</code>属性来代表节点的类名，它的值是一个字符串，类名之间用空格分隔。而现在，新增的<code>classList</code>让人相见恨晚。顾名思义它是节点的”类名列表”。它跟上面的<code>querySelectorAll</code>返回值相似，也具有<code>length</code>属性，可以用方括号方式和<code>item</code>读取每个值。当然也可以按找上面的方式将其转换为真正的数组:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="kwd">var</span><span class="pln"> list </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">);</span></code></pre>
-
+<pre><code>archors = Array.prototype.slice.call(archors);
+archors.push(1,2,3);</code></pre>
+<h3>2. <code>classList</code>属性</h3>
+<p>节点上都有一个<code>className</code>属性来代表节点的类名，它的值是一个字符串，类名之间用空格分隔。而现在，新增的<code>classList</code>让人相见恨晚。顾名思义它是节点的&quot;类名列表&quot;。它跟上面的<code>querySelectorAll</code>返回值相似，也具有<code>length</code>属性，可以用方括号方式和<code>item</code>读取每个值。当然也可以按找上面的方式将其转换为真正的数组:</p>
+<pre><code>var list = Array.prototype.slice.call(archor.classList);</code></pre>
 <p>你一定猜到了，我们完全可以利用这个list给节点添加或者删除节点类名了！</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pln">list</span><span class="pun">.</span><span class="pln">pop</span><span class="pun">();</span><span class="pln"> </span><span class="com">// 删除reached.</span><span class="pln">
-list</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="str">'read'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'done'</span><span class="pun">);</span><span class="pln"> </span><span class="com">//添加其他类名</span><span class="pln">
-archor</span><span class="pun">.</span><span class="pln">className </span><span class="pun">=</span><span class="pln"> list</span><span class="pun">.</span><span class="pln">join</span><span class="pun">(</span><span class="str">' '</span><span class="pun">);</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="pln">archor</span><span class="pun">.</span><span class="pln">className</span><span class="pun">);</span><span class="pln"> </span><span class="com">// "read get done"</span></code></pre>
-
+<pre><code>list.pop(); // 删除reached.
+list.push(&#39;read&#39;, &#39;get&#39;, &#39;done&#39;); //添加其他类名
+archor.className = list.join(&#39; &#39;);
+console.log(archor.className); // &quot;read get done&quot;</code></pre>
 <p>用惯了jQuery的<code>addClass</code>和<code>removeClass</code>，再像上面这样写添加删除类名，总觉得会不方便，但是，<code>classList</code>不负众望，将这些方法全部揽入。它具备添加类名<code>add</code>，删除类名<code>remove</code>，切换类名<code>toggle</code>，包含某类名<code>contains</code>等四大方法。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pln">archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">.</span><span class="pln">remove</span><span class="pun">(</span><span class="str">'read'</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 删除read</span><span class="pln">
-archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">.</span><span class="pln">add</span><span class="pun">(</span><span class="str">'reached'</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 添加reached</span><span class="pln">
-archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">.</span><span class="pln">toggle</span><span class="pun">(</span><span class="str">'done'</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 切换done</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="pln">archor</span><span class="pun">.</span><span class="pln">className</span><span class="pun">);</span><span class="pln">  </span><span class="com">//  'get reached'</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="pln">archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">.</span><span class="pln">contains</span><span class="pun">(</span><span class="str">'done'</span><span class="pun">));</span><span class="pln"> </span><span class="com">// false</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="pln">archor</span><span class="pun">.</span><span class="pln">classList</span><span class="pun">.</span><span class="pln">contains</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">));</span><span class="pln"> </span><span class="com">// true</span></code></pre>
-
-<h3 id="后记">后记：</h3>
-
+<pre><code>archor.classList.remove(&#39;read&#39;); // 删除read
+archor.classList.add(&#39;reached&#39;); // 添加reached
+archor.classList.toggle(&#39;done&#39;); // 切换done
+console.log(archor.className);  //  &#39;get reached&#39;
+console.log(archor.classList.contains(&#39;done&#39;)); // false
+console.log(archor.classList.contains(&#39;get&#39;)); // true</code></pre>
+<h3>后记：</h3>
 <p>真是太巧了，上午写完上面这篇水水的笔记后，下午看到著名博主张鑫旭的博客也发表了一篇<a href="http://www.zhangxinxu.com/wordpress/?p=3483">关于classList的文章</a>，博主的幽默和思路让人赞叹。我就索性再接着他的思路往下再走一步，分别扩展一下<code>classList</code>的方法。</p>
-
-<p><code>classList</code>内置的方法比jQuery这样的”外挂”要”弱爆”了，都不支持多类名操作。我们可以封装一些方法使其能进行多类名操作，并具备链式写法（博主称之为级联）。为了简洁，我们直接将它的内置方法加<code>s</code>作为扩展后的方法名，并进行统一添加，而<code>contains</code>的扩展方法<code>containss</code>较特殊，需单独列出来。</p>
-
+<p><code>classList</code>内置的方法比jQuery这样的&quot;外挂&quot;要&quot;弱爆&quot;了，都不支持多类名操作。我们可以封装一些方法使其能进行多类名操作，并具备链式写法（博主称之为级联）。为了简洁，我们直接将它的内置方法加<code>s</code>作为扩展后的方法名，并进行统一添加，而<code>contains</code>的扩展方法<code>containss</code>较特殊，需单独列出来。</p>
 <p><code>adds</code>方法，<code>removes</code>方法和<code>toggles</code>方法的添加：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">[</span><span class="str">'add'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'remove'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'toggle'</span><span class="pun">].</span><span class="pln">forEach</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">(</span><span class="pln">method</span><span class="pun">){</span><span class="pln">
-    </span><span class="typ">DOMTokenList</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">[</span><span class="pln">method </span><span class="pun">+</span><span class="pln"> </span><span class="str">'s'</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">str</span><span class="pun">){</span><span class="pln">   </span><span class="com">// 遍历数组统一添加‘s’方法</span><span class="pln">
-        </span><span class="kwd">var</span><span class="pln"> that </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">;</span><span class="pln">
-        str</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="str">' '</span><span class="pun">).</span><span class="pln">forEach</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">(</span><span class="pln">token</span><span class="pun">){</span><span class="pln">
-            that</span><span class="pun">[</span><span class="pln">method</span><span class="pun">](</span><span class="pln">token</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">});</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> that</span><span class="pun">;</span><span class="pln">  </span><span class="com">// 返回this保持链式写法</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">});</span></code></pre>
-
+<pre><code>[&#39;add&#39;, &#39;remove&#39;, &#39;toggle&#39;].forEach(function(method){
+    DOMTokenList.prototype[method + &#39;s&#39;] = function(str){   // 遍历数组统一添加‘s’方法
+        var that = this;
+        str.split(&#39; &#39;).forEach(function(token){
+            that[method](token);
+        });
+        return that;  // 返回this保持链式写法
+    };
+});</code></pre>
 <p><code>containss</code>方法(注意多了个<code>s</code>)：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="typ">DOMTokenList</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">containss </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">str</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> that </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">;</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> str</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="str">' '</span><span class="pun">).</span><span class="pln">every</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">(</span><span class="pln">token</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> that</span><span class="pun">.</span><span class="pln">contains</span><span class="pun">(</span><span class="pln">token</span><span class="pun">);</span><span class="pln">
-    </span><span class="pun">});</span><span class="pln">
-</span><span class="pun">};</span></code></pre>
-
+<pre><code>DOMTokenList.prototype.containss = function(str){
+    var that = this;
+    return str.split(&#39; &#39;).every(function(token){
+        return that.contains(token);
+    });
+};</code></pre>
 <p>其中，<code>forEach</code>和<code>every</code>是ES5里数组Array新增的七大方法中的两个。它们可以简单的分别这样实现：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">forEach </span><span class="pun">===</span><span class="pln"> </span><span class="str">'undefined'</span><span class="pun">){</span><span class="pln">
-    </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">forEach </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">fn</span><span class="pun">,</span><span class="pln"> scope</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++){</span><span class="pln">
-            fn</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">scope</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">[</span><span class="pln">i</span><span class="pun">],</span><span class="pln"> i</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-</span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">every </span><span class="pun">===</span><span class="pln"> </span><span class="str">'undefined'</span><span class="pun">){</span><span class="pln">
-    </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">every </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">fn</span><span class="pun">,</span><span class="pln"> scope</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++){</span><span class="pln">
-            </span><span class="kwd">if</span><span class="pun">(!</span><span class="pln">fn</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">scope</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">[</span><span class="pln">i</span><span class="pun">],</span><span class="pln"> i</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">))</span><span class="pln"> </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">;</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">;</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code>if(typeof Array.prototype.forEach === &#39;undefined&#39;){
+    Array.prototype.forEach = function(fn, scope){
+        for(var i = 0; i &lt; this.length; i ++){
+            fn.call(scope, this[i], i, this);
+        }
+    };
+}
+if(typeof Array.prototype.every === &#39;undefined&#39;){
+    Array.prototype.every = function(fn, scope){
+        for(var i = 0; i &lt; this.length; i ++){
+            if(!fn.call(scope, this[i], i, this)) return false;
+        }
+        return true;
+    };
+}</code></pre>
 
   </div>
 </div>

@@ -1,5 +1,6 @@
 body {
   padding-top: 20px;
+  font: 14px "Microsoft Yahei";
 }
 header,
 .marketing,
@@ -9,6 +10,7 @@ footer {
 }
 header {
   border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 20px;
 }
 header h3 {
   margin-top: 0;
@@ -77,4 +79,10 @@ a img{display:none;}
 ::-moz-selection{
   background: #83FDF3;
   color: #000;
+}
+h1,h2,h3,h4{
+  margin: 15px 0;
+}
+p{
+  font: 14px/2 "Microsoft Yahei";
 }

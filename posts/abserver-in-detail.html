@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>观察者模式--自定义事件模型详解</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+  <nav class="container">
+    <ul class="nav nav-pills pull-right">
+      <li class="active"><a href="/">Home</a></li>
+      <!-- <li><a href="./resume.html">About</a></li> -->
+    </ul>
+    <h3 class="text-muted"><a href="/">砸牛顿的大苹果的果园</a></h3>
+  </nav>
+</header>
+<div class="container">
+  <div class="row marketing">
+    
+    <h1>观察者模式--自定义事件模型详解</h1>
+<h2>缘由</h2>
+<p>自定义事件相当灵活，用途相当广，在攻城湿界备受恩宠。今天大苹果尝试着实现了一个简易的自定义事件模型，测试地址请围观：
+<a href="http://htmlhub.doorder.com/events/events.html">http://htmlhub.doorder.com/events/events.html</a>
+代码结构相当简单，思路也相当清晰，就缺拍砖的了。
+我们的自定义事件对象有个高端大气上档次的名字：Events！</p>
+<h2>分析</h2>
+<p>Events应该提供一个内部列表(list)来保存被绑定的各种事件类型(以下称type)跟事件(以下称handler)等数据。
+现实是：对于同一种type，有可能会被绑定多个handler，因此，每种type对应的是一个由其绑定的1个或多个handler组成的数组。</p>
+<p>Events内部的list的数据结构是如下格式：</p>
+<pre><code class="lang-javascript">list = {
+  &#39;type1&#39; : [handler1],
+  &#39;type2&#39; : [handler2, handler3]
+  &#39;type3&#39; : [handler4, handler5, handler6 ...],
+  ...
+}</code></pre>
+<p>简单的自定义事件模型应包括绑定、解绑和触发三个基本功能。根据以上事实，可以分别将以上三种功能分别称为 on、off和trigger。</p>
+<h2>架构</h2>
+<p>首先定义一个叫ev的类，并初始化它的list对象。</p>
+<pre><code class="lang-javascript">function ev(){
+  this.list = {} // 初始化list
+}</code></pre>
+<p>在它的原型prototype上设置以上三个方法。即：</p>
+<pre><code class="lang-javascript">ev.prototype = {
+  on : function(){
+  },
+  off : function(){
+  },
+  trigger : function(){
+  },
+  once : function(){
+  }
+}</code></pre>
+<p>注意到我还加上了once方法，它的功能是绑定一次性事件，当触发一次之后马上解绑该事件，由于它有着“阅后即焚”的隐私保护功能，在攻城湿界也有着巨大的市场份额。
+在最外面用一个立即执行函数来包裹以上代码，最后返回这个ev类，交给外面早已支好锅等着的Events：</p>
+<pre><code class="lang-javascript">var Events = function(){
+  function ev(){
+  // ...
+  }
+  ev.prototype = {
+  // ...
+  }
+  return ev
+}()</code></pre>
+<p>此时的Events是全局对象，如果不产生全局对象，可以挂在jQuery对象下：</p>
+<pre><code class="lang-javascript">$.Events = function(){
+  //...
+}()</code></pre>
+<p>大结构很清晰了，下面依次实现功能吧。</p>
+<h2>实现</h2>
+<h3>on方法：</h3>
+<p>on方法要接受两个参数，一个是type，另一个是handler，如果是首次绑定该type，需要初始化这个type的数组(见上面的数据结构)，于是on方法可以这么实现：</p>
+<pre><code class="lang-javascript">ev.prototype.on = function(type, handler) {
+  if(typeof handler != &#39;function&#39;){ // 确保handler是货真价实的函数
+    throw new Error(&#39;invalid handler&#39;)
+  }
+  this.list[type] = this.list[type] || [] // 起码是个数组
+  this.list[type].push(handler) // 因为数组，所以装货
+  return this // 返回自身，准备好菊花
+}</code></pre>
+<h3>off方法：</h3>
+<p>off方法也接受两个参数type和handler，但它的不同之处在于，当两个参数都传递的时候，表示要解绑掉某个type下的某个handler；当只传递一个type的时候，表示要解绑掉某个type下的所有handler；而当不传递参数时，表示要解绑所有type的所有handler。因此首先要判断参数个数：</p>
+<pre><code class="lang-javascript">ev.prototype.off = function(type, handler) {
+  var len = arguments.length // 缓存参数个数
+  var list = this.list[type] // 缓存此type类型的数组
+  if(!len){ // 一个参数都没提供
+    this.list = {} // 直接清空list
+  } else if(len == 1) { // 有type，没handler
+    delete this.list[type] // 这个type的handler全清空
+  } else if(list) { // 有type，也有handler，也有list
+    for(len = 0; len &lt; list.length; len ++){ // 地毯式扫荡handler
+      if(list[len] === handler) list.splice(len, 1) // 犀利的劈掉handler
+    }
+  }
+  return this // 照样菊花灿烂
+}</code></pre>
+<p>其中，list.splice(index, num, add)从数组list的第index个元素起，删除掉num个元素，再插上add等元素。</p>
+<h3>trigger方法：</h3>
+<p>trigger方法只需提供要触发的type即可，简单起见，将函数执行context上下文一律设置为window。此外，还需要转发自定义事件的任意参数。</p>
+<pre><code class="lang-javascript">ev.prototype.trigger = function (type){
+  var list = this.list[type] || [] // 如果不存在此type的话，就用空数组来充数。
+  var args = list.slice.call(arguments, 1) // 借用slice方法劈去type，剩下的都是人家自定义事件的
+  for(var i = 0, len = list.length; i &lt; len; i ++){
+    list[i].apply(null, args) // 挨个触发事件，转发参数
+  }
+  return this // 菊花灿烂
+}</code></pre>
+<h3>once方法：</h3>
+<p>once方法好难产，参考了jQuery的one方法，说多了都是泪！根据原理，绑定事件后，一旦触发此事件，就马上解绑！那怎么实现这样的功能呢？像下面这样，岂不是自欺欺人？</p>
+<pre><code class="lang-javascript">ev.prototype.once = function (type, handler) {
+  return this.on(type, handler).off(type, handler) // 绑定+解绑
+}</code></pre>
+<p>这样根本就不能触发了，还没触发该事件，就已经被暗杀了。经过搜索研究，发现可以处理下要传给on方法的handler，构造一个人肉炸弹one送给on，one一旦被触发，就会自爆：</p>
+<pre><code class="lang-javascript">ev.prototype.once = function (type, handler) {
+  if(typeof handler != &#39;function&#39;){
+    throw new Error(&#39;invalid handler.&#39;)
+  }
+  var that = this // 缓存this对象
+  var one = function(){ // one里调用handler
+    handler.apply(null, arguments) // 所有参数任意转发
+    that.off(type, one) // 解绑one事件，注意解绑的是one！
+  }
+  return this.on(type, one) // 绑定one事件，还照样能提供菊花
+}</code></pre>
+<h2>总结</h2>
+<p>于是，全部代码就形成了。</p>
+<pre><code class="lang-javascript">var Events = function() {
+  function ev(){
+    this.list = {} // 初始化list
+  }
+  ev.prototype = {
+    on : function(type, handler) {
+      if(typeof handler != &#39;function&#39;){ // 确保handler是货真价实的函数
+        throw new Error(&#39;invalid handler&#39;)
+      }
+      this.list[type] = this.list[type] || [] // 起码是个数组
+      this.list[type].push(handler) // 因为数组，所以装货
+      return this // 返回自身，准备好菊花
+    },
+    off : function(type, handler) {
+      var len = arguments.length // 缓存参数个数
+      var list = this.list[type] // 缓存此type类型的数组
+      if(!len){ // 一个参数都没提供
+        this.list = {} // 直接清空list
+      } else if(len == 1) { // 有type，没handler
+        delete this.list[type] // 这个type的handler全清空
+      } else if(list) { // 有type，也有handler，也有list
+        for(len = 0; len &lt; list.length; len ++){ // 地毯式扫荡handler
+          if(list[len] === handler) list.splice(len, 1) // 犀利的劈掉handler
+        }
+      }
+      return this // 照样菊花灿烂
+    },
+    trigger : function (type){
+      var list = this.list[type] || [] // 如果不存在此type的话，就用空数组来充个数。
+      var args = list.slice.call(arguments, 1) // 借用slice方法劈去type，剩下的都是人家自定义事件的
+      for(var i = 0, len = list.length; i &lt; len; i ++){
+        list[i].apply(null, args) // 挨个触发事件，转发参数
+      }
+      return this // 菊花灿烂
+    },
+    once : function (type, handler) {
+      if(typeof handler != &#39;function&#39;){
+        throw new Error(&#39;invalid handler.&#39;)
+      }
+      var that = this // 缓存this对象
+      var one = function(){ // one里调用handler
+        handler.apply(null, arguments) // 所有参数任意转发
+        that.off(type, one) // 解绑one事件，注意解绑的是one！
+      }
+      return this.on(type, one) // 绑定one事件，还照样能提供菊花
+    }
+  }
+  return ev
+}()</code></pre>
+<h2>用法：</h2>
+<p>直接实例化一个Events：</p>
+<pre><code class="lang-javascript">var aaa = new Events
+aaa.on(&#39;someEvent&#39;, function(){
+  console.log(&#39;custom event triggered.&#39;);
+})
+aaa.trigger(&#39;someEvent&#39;) // custom event triggered.
+
+aaa.on(&#39;someEvent&#39;, function(arg){
+  console.log(&#39;custom event with args :&#39; + arg)
+})
+aaa.trigger(&#39;someEvent&#39;, &#39;hello world.&#39;)
+// custom event triggered.
+// custom event with args :hello world.
+
+var bbb = new Events
+bbb.once(&#39;onceEvent&#39;, function(num){
+  console.log(&#39;this event will only trigger once: &#39; + num)
+})
+bbb.trigger(&#39;onceEvent&#39;, 1) // this event will only trigger once: 1
+bbb.trigger(&#39;onceEvent&#39;, 2) // 不再执行！</code></pre>
+<h2>注意事项</h2>
+<p>在解绑off时，我们这么写：</p>
+<pre><code class="lang-javascript">var ccc = new Events
+ccc.on(&#39;someEvent&#39;, function(){
+  console.log(&#39;someEvent occured！&#39;)
+}).off(&#39;someEvent&#39;, function(){
+  console.log(&#39;someEvent occured！&#39;)
+}).trigger(&#39;someEvent&#39;) // someEvent occured！</code></pre>
+<p>WTF! 说好的解绑呢？还是解绑根本就是闹着玩的？
+这里涉及到了对象比较问题。两个内容完全相同的对象也不会相等。</p>
+<pre><code class="lang-javascript">var p1 = {
+  name : &#39;lilei&#39;,
+  age : 12
+}
+var p2 = {
+  name : &#39;lilei&#39;,
+  age : 12
+}
+console.log(p1 === p2) // false</code></pre>
+<p>函数就是对象。两个内容完全相同的函数也不会完全相等(list[len] === handler)。所以，当绑定事件时，如果此事件以后会涉及到解绑，则在开始就需要将其函数名或者函数引用传递给on跟off，而不是两个内容相同的函数字面量。</p>
+<pre><code class="lang-javascript">var ddd = new Events
+var handler = function(num){
+  console.log(&#39;someEvent occured！&#39; + num)
+}
+ddd.on(&#39;someEvent&#39;, handler).trigger(&#39;someEvent&#39;, 1) // someEvent occured！1
+ddd.off(&#39;someEvent&#39;, handler).trigger(&#39;someEvent&#39;, 2) // 不再执行！</code></pre>
+
+
+  </div>
+</div>
+<footer>
+  <div class="container">
+    <p>&copy; Stenders.github.io@2014</p>
+  </div>
+</footer>
+<a href="javascript:;" class="gotop"><i class="fa fa-arrow-circle-o-up"></i></a>
+<!-- <script type="text/javascript" src="/js/jquery-1.10.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script> -->
+<script type="text/javascript" src="/js/posts.js"></script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F062a4b4393b5b26e1db637b7504e8737' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

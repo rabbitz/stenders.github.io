@@ -9,7 +9,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>砸牛顿的大苹果的果园</title>
-  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/bootstrap-responsive.css" />
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <script src="/js/modernizr.js"></script>
@@ -30,31 +31,43 @@
 </header>
 <div class="container">
 
-  <div class="jumbotron">
+  <div class="jumbotron hero-unit">
     <h1>Welcome!</h1>
     <p class="lead">Here is an F2E Web developer’s Blog for making friends with you.</p>
     <!-- <p><a class="btn btn-lg btn-success" href="#" role="button">Sign up today</a></p> -->
   </div>
 
   <section class="row marketing">
-    <h4><a href="/posts/mustache-template-documentation.html">Mustache Tempate 文档翻译</a></h4>
+    <h2><a href="/posts/build-contact-manager-with-backbone.html">使用Backbone.js创建通讯录：Part 1</a></h2>
+    <p>Backbone是一个能让人们使用MVC模式轻松创建大型JavaScript应用的体系性框架。Backbone并不被认为是真正的MVC-因为"C"指的是集合(Collection)而并不是控制器(Controller)，但是它还是提供了许多有用的东西来让我们编写强大且可维护的代码。</p>
+  </section>
+  <section class="row marketing">
+    <h2><a href="/posts/abserver-in-detail.html">观察者模式--自定义事件模型详解</a></h2>
+    <p>自定义事件相当灵活，用途相当广，在攻城湿界备受恩宠。今天大苹果尝试着实现了一个简易的自定义事件模型，测试地址请围观： http://htmlhub.doorder.com/events/events.html 代码结构相当简单，思路也相当清晰，就缺拍砖的了。 我们的自定义事件对象有个高端大气上档次的名字：Events！</p>
+  </section>
+  <section class="row marketing">
+    <h2><a href="/posts/introduction-to-promise.html">Promises简介</a></h2>
+    <p>本文假定读者具有一定的JavaScript基础。不论是刚接触异步编程还是对此有一定经验的人都适合阅读。</p>
+  </section>
+  <section class="row marketing">
+    <h2><a href="/posts/learning-ajax.html">Ajax初探</a></h2>
+    <p>从事前端开发已经两年多，从来没学习和使用过Ajax。有则只是从jQuery中了解过封装的方法，但是因为没有接触后端服务器，这些方法也几乎没用到过。</p>
+  </section>
+  <section class="row marketing">
+    <h2><a href="/posts/mustache-template-documentation.html">Mustache Tempate 文档翻译</a></h2>
     <p>mustache.js是JavaScript的mustache模版系统的js脚本文件。 Mustache是无逻辑语法的模版。</p>
   </section>
   <section class="row marketing">
-    <h4><a href="/posts/queryselector-queryselectorall.html">HTML5 两个新增的API笔记</a></h4>
-    <p>HTML5中新增了两个DOM选择器 <code>querySelector</code> 和 <code>querySelectorAll</code> 。他们的选择效率问题有人专门对它们跟其他选择器<code>getElementsByTagName</code>和 <code>getElementsByClassName</code> 等做过对比。</p>
-  </section>
-  <section class="row marketing">
-    <h4><a href="/posts/learning-ajax.html">Ajax初探</a></h4>
-    <p>从事前端开发已经两年多，从来没学习和使用过Ajax（此时脸已经通红）。有则只是从jQuery中了解过封装的方法，但是因为没有接触后端服务器，这些方法也几乎没用到过。</p>
-  </section>
-  <section class="row marketing">
-    <h4><a href="/posts/the-best-practice-to-detect-ie.html">JavaScript判断IE各版本最完美解决方案</a></h4>
+    <h2><a href="/posts/the-best-practice-to-detect-ie.html">JavaScript判断IE各版本最完美解决方案</a></h2>
     <p>jQuery在1.9版本之前，提供了一个浏览器对象检测的属性<code>$.browser</code>，使用率极高。但是在1.9版本发布之后，大家钟爱的这个属性被jQuery无情的抛弃了。</p>
   </section>
   <section class="row marketing">
-    <h4><a href="/posts/javascript-functions.html">JavaScript功能函数收集</a></h4>
-    <p>这些函数方法都是看《JavaScript模式》学到的，jQuery里也大部分都有对应的实现，而这些是原生方法，今天有空就将它们记录下来，先写10个，以后再继续补充。</p>
+    <h2><a href="/posts/queryselector-queryselectorall.html">HTML5 两个新增的API笔记</a></h2>
+    <p>HTML5中新增了两个DOM选择器 querySelector 和 querySelectorAll 。他们的选择效率问题有大牛们专门对它们跟其他选择器getElementsByTagName和 getElementsByClassName 等做过<a target="_blank" href="https://speakerdeck.com/lijing00333/css-selector-performance">对比</a>。</p>
+  </section>
+  <section class="row marketing">
+    <h2><a href="/posts/javascript-functions.html">JavaScript 常用函数收集</a></h2>
+    <p>这些函数方法都是看书学到的，jQuery里也大部分都有对应的实现，而这些是原生方法，今天有空就将它们记录下来，先写10个，以后再继续补充。</p>
   </section>
 </div>
 <footer>

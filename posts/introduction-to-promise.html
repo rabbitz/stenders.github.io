@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Promises简介</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+  <nav class="container">
+    <ul class="nav nav-pills pull-right">
+      <li class="active"><a href="/">Home</a></li>
+      <!-- <li><a href="./resume.html">About</a></li> -->
+    </ul>
+    <h3 class="text-muted"><a href="/">砸牛顿的大苹果的果园</a></h3>
+  </nav>
+</header>
+<div class="container">
+  <div class="row marketing">
+
+<h1>Promises简介</h1>
+
+<blockquote>
+<p>原文地址：<a href="http://www.promisejs.org/intro/">http://www.promisejs.org/intro/</a></p>
+</blockquote>
+<p>本文假定读者具有一定的JavaScript基础。不论是刚接触异步编程还是对此有一定经验的人都适合阅读。</p>
+<h2>初衷</h2>
+<p>我们希望代码能异步执行，因为当代码在同步执行时，(在客户端应用中)用户界面(user interface，简称UI)会被卡住或者(在服务器端应用中)请求得不到及时响应。解决方案之一是多线程，但是多线程又会带来其他问题，而且JavaScript中也不支持。</p>
+<p>能让代码异步起来的最简单的方法之一就是传递回调函数。也就是NodeJS所在使用的。它能行得通，但是有一系列的问题。</p>
+<blockquote>
+<p>1.You lose the separation of inputs and outputs to a function since the callback must be passed as an input</p>
+<p>2.It is difficult to compose multiple serial or parallel operations</p>
+<p>3.You lose a lot of helpful debugging information and error handling ability relating to stack traces and the bubbling up of exceptions</p>
+<p>4.You can no longer use the built in control flow constructs and they must all be re-invented to work asynchronously</p>
+</blockquote>
+<p>浏览器端有很多基于事件模型的解决方案，但这只能解决问题1，却解决不了2-4。</p>
+<p>Promises就是为了解决问题1-3而产生的，而4将在ES6中也能得到解决。</p>
+<h2>基本方法</h2>
+<p>Promises的核心思想就是一个promise对象代表着一个异步操作的返回结果。它也许最终只是个抛出的错误也没关系。异步函数的返回值应是promise对象：</p>
+<pre><code class="lang-javascript">var prom = get(&#39;http://www.example.com&#39;)</code></pre>
+<p>当请求<code>http://www.example.com</code>页面时，会发起一个异步请求，返回一个promise对象prom。</p>
+<p>要从promise对象中获取请求的内容，我们使用done方法，它可以排入一个待执行的回调函数进队列，等到promise异步操作完成后，队列里的回调就会依次被执行。</p>
+<pre><code class="lang-javascript">var prom = get(&#39;http://www.example.com&#39;)
+prom.done(function(content){
+  console.log(content)
+})</code></pre>
+<p>注意我们是怎么给done方法传递一个未执行的回调函数的，当异步操作结束后此回调仅会被执行一次。而done方法我们能执行多次，执行的或早或晚都没关系，但总是得到同样的结果。比如当异步操作已经完成之后，仍然还可以去执行它：</p>
+<pre><code class="lang-javascript">var cache = {}
+function getCache(url){
+  if(cache[url]) return cache[url]
+  else return cache[url] = get(url)
+}
+var promA = getCache(&#39;http://www.example.com&#39;)
+promA.done(function(content){
+  console.log(content)
+})
+setTimeout(function(){
+  var promB = getCache(&#39;http://www.example.com&#39;)
+  promB.done(function(content){
+    console.log(content)
+  })
+}, 10000)</code></pre>
+<p>当然了，如果去请求一个错误页面会报错并抛出异常。默认情况下，done方法只简单的抛出这些错误并使其适当的被日志记录，并(除了在浏览器环境中)中断程序。然而我们更喜欢以提供回调的方式来自由控制错误处理：</p>
+<pre><code class="lang-javascript">var prom = get(&#39;http://www.example.com&#39;)
+prom.done(function (content) {
+  console.log(content)
+}, function (ex) {
+  console.error(&#39;Requesting www.example.com failed, maybe you should try again?&#39;)
+  console.error(ex.stack)
+})</code></pre>
+<h2>变形</h2>
+<p>通常，对于已经存在的一个特定promise对象，对它做一些操作后，想得到另外一个promise对象。Promises有个then方法，它类似Array对象的map方法。</p>
+<pre><code class="lang-javascript">function getJSON(url){
+  return get(url)
+    .then(function(res){
+      return JSON.parse(res)
+    })
+}
+getJSON(&#39;http://www.example.com/foo.json&#39;).done(function(res){
+  console.dir(res)
+})</code></pre>
+<p>注意then方法是怎么处理错误的，它能像同步代码一样抛出错误堆栈。还可以在调用then方法的时候传递处理错误的回调函数：</p>
+<pre><code class="lang-javascript">function getJSON(url) {
+  return get(url)
+    .then(function (res) {
+      return JSON.parse(res)
+    }, function (err) {
+      if (canRetry(err)) return getJSON(url)
+      else throw err
+    })
+}
+getJSON(&#39;http://www.example.com/foo.json&#39;).done(function (res) {
+  console.dir(res)
+})</code></pre>
+<p>处理错误的回调函数并不是要处理由JSON.parse抛出的错误，而是由调用get方法而抛出的一些错误，这些错误会被加以重试操作。注意下面是怎样从then方法返回promise对象和它被自动解开的</p>
+<pre><code class="lang-javascript">var prom = get(&#39;http://example.com/url-to-request&#39;)
+  .then(function(url){
+    return get(url)
+  })
+  .then(function(res){
+    return JSON.parse(res)
+  })
+prom.done(function(finalResult){
+  console.dir(finalResult)    // 这是真正的’最终结果‘
+})</code></pre>
+<h2>组合</h2>
+<p>promise作为一个返回值的优势之一就是可以针对它进行一些有用的操作来拼接其他promise对象。all方法就是多数框架里都支持的这样的操作之一：</p>
+<pre><code class="lang-javascript">var a = get(&#39;http://www.example.com&#39;)
+var b = get(&#39;http://www.example.co.uk&#39;)
+var both = Promise.all([a, b])
+both.done(function(res){
+  var a = res[0]
+  var b = res[1]
+  console.dir({
+    &#39;.com&#39;: a,
+    &#39;.co.uk&#39;: b
+  })
+})</code></pre>
+<p>当需要进行许多并行操作的时候，这样就显得特别有用。由此还也可以扩展成为数组形式的大型多任务操作：</p>
+<pre><code class="lang-javascript">function readFiles(files){
+  return Promise.all(files.map(function(name){
+    return readFile(name)
+  }))
+}
+readFile([&#39;fileA.txt&#39;,&#39;fileB.txt&#39;,&#39;fileC.txt&#39;]).done(function(filesContents){
+  console.dir(filesContents)
+})</code></pre>
+<p>当然，用then方法仍然可以进行串行操作：</p>
+<pre><code class="lang-javascript">get(&#39;http://www.example.com&#39;).then(function(res){
+  console.log(&#39;.com&#39;)
+  console.dir(res)
+  return get(&#39;http://www.example.co.uk&#39;)
+}).done(function(res){
+  console.log(&#39;.co.uk&#39;)
+  console.dir(res)
+})</code></pre>
+<p>展开想象，还可以使用then方法来串行处理数组形式的大型多任务操作：</p>
+<pre><code class="lang-javascript">function readFiles(files){
+  var result = []
+  // 创建一个以null为初始值的promis对象
+  var ready = Promise.from(null)
+  files.forEach(function(name){
+    ready = ready.then(function(){
+      return readFile(name)
+    }).then(function(content){
+      result.push(content)
+    })
+  })
+  return ready.then(function(){
+    return result
+  })
+}
+
+readFiles([&#39;fileA.txt&#39;, &#39;fileB.txt&#39;, &#39;fileC.txt&#39;]).done(function(filesContents){
+  console.dir(filesContents)
+})</code></pre>
+<h2>已成型库/下载</h2>
+<p>现在已经有大量的遵守Promises/A+规范的成型库，并非所有库都提供了done方法和Promise.all方法。可以根据实际需求来挑选适合你的库，下面是两个推荐的库：</p>
+<h3><a href="https://github.com/then/promise">Promise</a></h3>
+<h3><a href="https://github.com/kriskowal/q">Q</a></h3>
+<h2><a href="http://www.promisejs.org/implementations">其他库</a></h2>
+
+
+  </div>
+</div>
+<footer>
+  <div class="container">
+    <p>&copy; Stenders.github.io@2014</p>
+  </div>
+</footer>
+<a href="javascript:;" class="gotop"><i class="fa fa-arrow-circle-o-up"></i></a>
+<!-- <script type="text/javascript" src="/js/jquery-1.10.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script> -->
+<script type="text/javascript" src="/js/posts.js"></script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F062a4b4393b5b26e1db637b7504e8737' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

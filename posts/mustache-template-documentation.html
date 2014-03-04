@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mustache Tempate 文档翻译</title>
+  <title>Mustache.js文档翻译</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -25,320 +26,220 @@
 </header>
 <div class="container">
   <div class="row marketing">
-    <h2><a href="javascript:location.reload();">Mustache Tempate 文档翻译</a></h2>
-
-
-<p>原文地址：<a href="https://github.com/janl/mustache.js">https://github.com/janl/mustache.js</a></p>
-
+    
+    <h1>Mustache.js - Logic-less{{mustache}} templates with JavaScript</h1>
+<p>原文地址：<a href="https://github.com/janl/mustache.js"><a href="https://github.com/janl/mustache.js">https://github.com/janl/mustache.js</a></a></p>
 <blockquote>
-  <p>试问，还有什么逻辑比”根本没有逻辑”更牛叉呢？</p>
+<p>试问，还有什么逻辑比&quot;根本没有逻辑&quot;更牛叉呢？</p>
 </blockquote>
-
 <p><a href="http://github.com/janl/mustache.js">mustache.js</a>是JavaScript的<a href="http://mustache.github.com/">mustache</a>模版系统的js脚本文件。
 <a href="http://mustache.github.com/">Mustache</a>是无逻辑语法的模版。它可以被HTML、配置文件、源码等任何东西使用。它的工作方式是在模版里添加扩展标签，而模版的数据则由hash或者object来提供。
-我们称之为”无逻辑”是因为mustache里没有if语句，else从句以及for循环。唯一的是只有一些标签。这些标签会被一些值替换，或者没有值来替换，也可能是一系列的值来替换。
+我们称之为&quot;无逻辑&quot;是因为mustache里没有if语句，else从句以及for循环。唯一的是只有一些标签。这些标签会被一些值替换，或者没有值来替换，也可能是一系列的值来替换。
 也可以通过参考<code>mustache(5)</code>的<a href="http://mustache.github.com/mustache.5.html">手册</a>来对mustache模版的语法有个大概的了解。</p>
-
-<h2 id="哪里是mustachejs的用武之地">哪里是mustache.js的用武之地？</h2>
-
+<h2>哪里是mustache.js的用武之地？</h2>
 <p>你只要能用到JavaScript的地方，都可以用它来渲染mustache模版。这些地方包括web浏览器，服务器端环境比如<a href="http://nodejs.org/">node</a>和<a href="http://couchdb.apache.org/">CouchDB</a>视图。
 mustache.js支持<a href="http://www.commonjs.org/">CommonJS</a>模块API和<a href="https://github.com/amdjs/amdjs-api/wiki/AMD">模块异步加载机制</a>，后者又简称AMD。</p>
-
-<h2 id="哪些公司在用mustachejs">哪些公司在用mustache.js？</h2>
-
+<h2>哪些公司在用mustache.js？</h2>
 <p>在<a href="http://wiki.github.com/janl/mustache.js/beard-competition">Github wiki</a>上保存了一份更新中的mustache.js用户列表。如果贵公司在使用，可以自行添加。</p>
-
-<h2 id="基本用法">基本用法</h2>
-
+<h2>基本用法</h2>
 <p>下面的例子是mustache.js的快速入门：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> view </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    title </span><span class="pun">:</span><span class="pln"> </span><span class="str">"Joe"</span><span class="pun">,</span><span class="pln">
-    calc </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> </span><span class="lit">2</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="lit">4</span><span class="pun">;</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">};</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> output </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Mustache</span><span class="pun">.</span><span class="pln">render</span><span class="pun">(</span><span class="str">"{{title}} spends {{calc}}"</span><span class="pun">,</span><span class="pln"> view</span><span class="pun">);</span></code></pre>
-
+<pre><code class="lang-javascript">var view = {
+    title : &quot;Joe&quot;,
+    calc : function(){
+        return 2 + 4;
+    }
+};
+var output = Mustache.render(&quot;{{title}} spends {{calc}}&quot;, view);</code></pre>
 <p>在本例中，函数<code>Mustache.render</code>接收两个参数：1) mustache模版 2) 包含了用来渲染这个模版的数据和代码的<code>view</code>对象。</p>
-
-<h2 id="模版">模版</h2>
-
-<p>一个mustache模版是一个包含了一些mustache标签的字符串。这些标签由双大括号包裹。<code>{{person}}</code>就是一个标签，<code>{{#person}}</code>同样也是一个标签。这两个标签里，我们用了同样的变量<code>person</code>作为标签的”key”。
+<h2>模版</h2>
+<p>一个mustache模版是一个包含了一些mustache标签的字符串。这些标签由双大括号包裹。<code>{{person}}</code>就是一个标签，<code>{{#person}}</code>同样也是一个标签。这两个标签里，我们用了同样的变量<code>person</code>作为标签的&quot;key&quot;。
 在mustache.js里标签有以下几种类型。</p>
-
-<h3 id="变量标签">变量标签</h3>
-
+<h3>变量标签</h3>
 <p>最基本的一种标签类型就是一个简单的变量标签了。标签<code>{{name}}</code>以当前对象中的<code>name</code>key的值来生成。如果对象数据中没有提供该key，则变量值为空。
 所有变量标签默认转译HTML。如果想生成未转译的HTML，需要用到三个大括号的方式：<code>{{{name}}}</code>。也可以使用<code>&amp;</code>来处理变量标签。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-    </span><span class="str">"name"</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="str">"Chris"</span><span class="pun">,</span><span class="pln">
-    </span><span class="str">"company"</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="str">"&lt;b&gt;Github&lt;/b&gt;"</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+    &quot;name&quot; : &quot;Chris&quot;,
+    &quot;company&quot; : &quot;&lt;b&gt;Github&lt;/b&gt;&quot;
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">*{{</span><span class="pln">name</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*{{</span><span class="pln">age</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*{{</span><span class="pln">company</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*{{{</span><span class="pln">company</span><span class="pun">}}}</span><span class="pln">
-</span><span class="pun">*{{&amp;</span><span class="pln">company</span><span class="pun">}}</span></code></pre>
-
+<pre><code class="lang-javascript">*{{name}}
+*{{age}}
+*{{company}}
+*{{{company}}}
+*{{&amp;company}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">*</span><span class="pln"> </span><span class="typ">Chris</span><span class="pln">
-</span><span class="pun">*</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">&amp;</span><span class="pln">lt</span><span class="pun">;</span><span class="pln">b</span><span class="pun">&amp;</span><span class="pln">gt</span><span class="pun">;</span><span class="typ">GitHub</span><span class="pun">&amp;</span><span class="pln">lt</span><span class="pun">;</span><span class="str">/b&amp;gt;
-* &lt;b&gt;GitHub&lt;/</span><span class="pln">b</span><span class="pun">&gt;</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="str">&lt;b&gt;</span><span class="typ">GitHub</span><span class="pun">&lt;/</span><span class="pln">b</span><span class="pun">&gt;</span></code></pre>
-
+<pre><code>* Chris
+*
+* &amp;lt;b&amp;gt;GitHub&amp;lt;/b&amp;gt;
+* &lt;b&gt;GitHub&lt;/b&gt;
+* &lt;b&gt;GitHub&lt;/b&gt;</code></pre>
 <p>JavaScript中的点运算符可用来获取在view中的对象的属性。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    </span><span class="str">"first"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Michael"</span><span class="pun">,</span><span class="pln">
-    </span><span class="str">"last"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Jackson"</span><span class="pln">
-  </span><span class="pun">},</span><span class="pln">
-  </span><span class="str">"age"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"RIP"</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;name&quot;: {
+    &quot;first&quot;: &quot;Michael&quot;,
+    &quot;last&quot;: &quot;Jackson&quot;
+  },
+  &quot;age&quot;: &quot;RIP&quot;
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">*</span><span class="pln"> </span><span class="pun">{{</span><span class="pln">name</span><span class="pun">.</span><span class="pln">first</span><span class="pun">}}</span><span class="pln"> </span><span class="pun">{{</span><span class="pln">name</span><span class="pun">.</span><span class="kwd">last</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">{{</span><span class="pln">age</span><span class="pun">}}</span></code></pre>
-
+<pre><code class="lang-javascript">* {{name.first}} {{name.last}}
+* {{age}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">*</span><span class="pln"> </span><span class="typ">Michael</span><span class="pln"> </span><span class="typ">Jackson</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> RIP</span></code></pre>
-
-<h3 id="区块标签">区块标签</h3>
-
+<pre><code class="lang-javascript">* Michael Jackson
+* RIP</code></pre>
+<h3>区块标签</h3>
 <p>区块标签可以一次或多次地渲染一个片段中的文本，次数取决于提供的值的数量。
 一个区块标签以<code>#</code>开头并以<code>/</code>结束。比如<code>{{#person}}</code>这个区块标签以<code>person</code>区块开始，并以<code>{{/person}}</code>结束。两者之间的文本就是传说中的区块标签的片段内容了。
 区块标签的行为取决于数据中key的值。</p>
-
-<h4 id="false值和空列表">False值和空列表</h4>
-
+<h4>False值和空列表</h4>
 <p>如果<code>person</code>的属性不存在，或者存在并且取值是<code>null</code>、<code>undefined</code>、<code>false</code>，或者是一个空列表，那么这个片段的内容将不会被渲染。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-    </span><span class="str">"person"</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">false</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+    &quot;person&quot; : false
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="typ">Shown</span><span class="pun">.</span><span class="pln">
-</span><span class="pun">{{#</span><span class="pln">person</span><span class="pun">}}</span><span class="pln">
-</span><span class="typ">Never</span><span class="pln"> shown</span><span class="pun">!</span><span class="pln">
-</span><span class="pun">{{/</span><span class="pln">person</span><span class="pun">}}</span></code></pre>
-
+<pre><code>Shown.
+{{#person}}
+Never shown!
+{{/person}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="typ">Shown</span><span class="pun">.</span></code></pre>
-
-<h4 id="非负值和非空列表">非负值和非空列表</h4>
-
+<pre><code class="lang-javascript">Shown.</code></pre>
+<h4>非负值和非空列表</h4>
 <p>如果<code>person</code>的key存在并且不是<code>null</code>、<code>undefined</code>、<code>false</code>，或者空列表，那么这个片段就会被渲染一次或者多次了。
 当属性值是个列表时，片段中的内容会以每个列表项为内容分别渲染一次。每次遍历时，片段的作用域context会被设置为当前列表项。以这样的方式来遍历整个collections。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"stooges"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">[</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Moe"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Larry"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Curly"</span><span class="pln"> </span><span class="pun">}</span><span class="pln">
-  </span><span class="pun">]</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;stooges&quot;: [
+    { &quot;name&quot;: &quot;Moe&quot; },
+    { &quot;name&quot;: &quot;Larry&quot; },
+    { &quot;name&quot;: &quot;Curly&quot; }
+  ]
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{#</span><span class="pln">stooges</span><span class="pun">}}</span><span class="pln">
-</span><span class="str">&lt;b&gt;</span><span class="pun">{{</span><span class="pln">name</span><span class="pun">}}&lt;/</span><span class="pln">b</span><span class="pun">&gt;</span><span class="pln">
-</span><span class="pun">{{/</span><span class="pln">stooges</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{#stooges}}
+&lt;b&gt;{{name}}&lt;/b&gt;
+{{/stooges}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="tag">&lt;b&gt;</span><span class="pln">Moe</span><span class="tag">&lt;/b&gt;</span><span class="pln">
-</span><span class="tag">&lt;b&gt;</span><span class="pln">Larry</span><span class="tag">&lt;/b&gt;</span><span class="pln">
-</span><span class="tag">&lt;b&gt;</span><span class="pln">Curly</span><span class="tag">&lt;/b&gt;</span></code></pre>
-
+<pre><code>&lt;b&gt;Moe&lt;/b&gt;
+&lt;b&gt;Larry&lt;/b&gt;
+&lt;b&gt;Curly&lt;/b&gt;</code></pre>
 <p>当遍历的是一个由字符串组成的数组时，圆点<code>.</code>可以用来当作当前列表项的值。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"musketeers"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">[</span><span class="str">"Athos"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Aramis"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"Porthos"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"D'Artagnan"</span><span class="pun">]</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;musketeers&quot;: [&quot;Athos&quot;, &quot;Aramis&quot;, &quot;Porthos&quot;, &quot;D&#39;Artagnan&quot;]
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{#</span><span class="pln">musketeers</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">{{.}}</span><span class="pln">
-</span><span class="pun">{{/</span><span class="pln">musketeers</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{#musketeers}}
+* {{.}}
+{{/musketeers}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">*</span><span class="pln"> </span><span class="typ">Athos</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="typ">Aramis</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="typ">Porthos</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> D</span><span class="pun">‘</span><span class="typ">Artagnan</span></code></pre>
-
+<pre><code>* Athos
+* Aramis
+* Porthos
+* D‘Artagnan</code></pre>
 <p>如果区块标签的某个变量值是function，则会在遍历时以当前列表项作为作用域来执行它。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"beatles"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">[</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"firstName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"John"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"lastName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Lennon"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"firstName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Paul"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"lastName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"McCartney"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"firstName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"George"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"lastName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Harrison"</span><span class="pln"> </span><span class="pun">},</span><span class="pln">
-    </span><span class="pun">{</span><span class="pln"> </span><span class="str">"firstName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Ringo"</span><span class="pun">,</span><span class="pln"> </span><span class="str">"lastName"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Starr"</span><span class="pln"> </span><span class="pun">}</span><span class="pln">
-  </span><span class="pun">],</span><span class="pln">
-  </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">firstName </span><span class="pun">+</span><span class="pln"> </span><span class="str">" "</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">lastName</span><span class="pun">;</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;beatles&quot;: [
+    { &quot;firstName&quot;: &quot;John&quot;, &quot;lastName&quot;: &quot;Lennon&quot; },
+    { &quot;firstName&quot;: &quot;Paul&quot;, &quot;lastName&quot;: &quot;McCartney&quot; },
+    { &quot;firstName&quot;: &quot;George&quot;, &quot;lastName&quot;: &quot;Harrison&quot; },
+    { &quot;firstName&quot;: &quot;Ringo&quot;, &quot;lastName&quot;: &quot;Starr&quot; }
+  ],
+  &quot;name&quot;: function () {
+    return this.firstName + &quot; &quot; + this.lastName;
+  }
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{#</span><span class="pln">beatles</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">{{</span><span class="pln">name</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">{{/</span><span class="pln">beatles</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{#beatles}}
+* {{name}}
+{{/beatles}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">*</span><span class="pln"> </span><span class="typ">John</span><span class="pln"> </span><span class="typ">Lennon</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="typ">Paul</span><span class="pln"> </span><span class="typ">McCartney</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="typ">George</span><span class="pln"> </span><span class="typ">Harrison</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="typ">Ringo</span><span class="pln"> </span><span class="typ">Starr</span></code></pre>
-
-<h4 id="functions">Functions</h4>
-
+<pre><code class="lang-javascript">* John Lennon
+* Paul McCartney
+* George Harrison
+* Ringo Starr</code></pre>
+<h4>Functions</h4>
 <p>如果区块标签的某个key值是个function，它也将会被执行。它的第一个参数将是这个区块标签的未被渲染过的字面变量形式。第二个参数将是一个特殊的渲染函数，这个函数将使用当前的字面变量view作为它的view参数。这个渲染函数将以当前的view对象作为作用域执行。（chunhang注：好晕，看例子吧）
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"name"</span><span class="pun">:</span><span class="pln"> </span><span class="str">"Tater"</span><span class="pun">,</span><span class="pln">
-  </span><span class="str">"bold"</span><span class="pun">:</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">()</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">function</span><span class="pln"> </span><span class="pun">(</span><span class="pln">text</span><span class="pun">,</span><span class="pln"> render</span><span class="pun">)</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-      </span><span class="kwd">return</span><span class="pln"> </span><span class="str">"&lt;b&gt;"</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> render</span><span class="pun">(</span><span class="pln">text</span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">"&lt;/b&gt;"</span><span class="pun">;</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;name&quot;: &quot;Tater&quot;,
+  &quot;bold&quot;: function () {
+    return function (text, render) {
+      return &quot;&lt;b&gt;&quot; + render(text) + &quot;&lt;/b&gt;&quot;;
+    }
+  }
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{#</span><span class="pln">bold</span><span class="pun">}}</span><span class="typ">Hi</span><span class="pln"> </span><span class="pun">{{</span><span class="pln">name</span><span class="pun">}}.{{/</span><span class="pln">bold</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{#bold}}Hi {{name}}.{{/bold}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="tag">&lt;b&gt;</span><span class="pln">Hi Tater.</span><span class="tag">&lt;/b&gt;</span></code></pre>
-
-<h3 id="反向区块标签">反向区块标签</h3>
-
+<pre><code>&lt;b&gt;Hi Tater.&lt;/b&gt;</code></pre>
+<h3>反向区块标签</h3>
 <p>反向区块标签是以<code>{{^section}}</code>开头，而不是<code>{{#section}}</code>。反向区块标签的片段内容只有在下列情况下才会被渲染：区块标签的值是<code>null</code>、<code>undefined</code>、<code>false</code>，或者空列表中的任何一个。
 View:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">{</span><span class="pln">
-  </span><span class="str">"repos"</span><span class="pun">:</span><span class="pln"> </span><span class="pun">[]</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">{
+  &quot;repos&quot;: []
+}</code></pre>
 <p>Template:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{#</span><span class="pln">repos</span><span class="pun">}}&lt;</span><span class="pln">b</span><span class="pun">&gt;{{</span><span class="pln">name</span><span class="pun">}}&lt;/</span><span class="pln">b</span><span class="pun">&gt;{{/</span><span class="pln">repos</span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">{{^</span><span class="pln">repos</span><span class="pun">}}</span><span class="typ">No</span><span class="pln"> repos </span><span class="pun">:({{/</span><span class="pln">repos</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{#repos}}&lt;b&gt;{{name}}&lt;/b&gt;{{/repos}}
+{{^repos}}No repos :({{/repos}}</code></pre>
 <p>Output:</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="typ">No</span><span class="pln"> repos </span><span class="pun">:(</span></code></pre>
-
-<h3 id="注释标签">注释标签</h3>
-
+<pre><code>No repos :(</code></pre>
+<h3>注释标签</h3>
 <p>注释标签以感叹号开始，执行时会被忽略。下面的模版中：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="tag">&lt;h1&gt;</span><span class="pln">Today{{! gnore me}}.</span><span class="tag">&lt;/h1&gt;</span></code></pre>
-
+<pre><code>&lt;h1&gt;Today{{! gnore me}}.&lt;/h1&gt;</code></pre>
 <p>将被渲染成：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="tag">&lt;h1&gt;</span><span class="pln">Today.</span><span class="tag">&lt;/h1&gt;</span></code></pre>
-
+<pre><code>&lt;h1&gt;Today.&lt;/h1&gt;</code></pre>
 <p>注释标签可以多行。</p>
-
-<h3 id="片段标签">片段标签</h3>
-
+<h3>片段标签</h3>
 <p>片段标签以大于号开始，如{{&gt; box}}。
 片段标签会在执行期间被渲染（而不是编译期间），因此递归片段标签成了可能。但应该避免进入无限循环。
 它也继承执行环境。在ERB中有这样的语句：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pun">&lt;%=</span><span class="pln"> </span><span class="kwd">partial</span><span class="pln"> </span><span class="pun">:</span><span class="pln">next_more</span><span class="pun">,</span><span class="pln"> </span><span class="pun">:</span><span class="pln">start </span><span class="pun">=&gt;</span><span class="pln"> start</span><span class="pun">,</span><span class="pln"> </span><span class="pun">:</span><span class="pln">size </span><span class="pun">=&gt;</span><span class="pln"> size %&gt;</span></code></pre>
-
+<pre><code class="lang-javascript">&lt;%= partial :next_more, :start =&gt; start, :size =&gt; size %&gt;</code></pre>
 <p>而Mustached只需这样写：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">{{&gt;</span><span class="pln"> next_more</span><span class="pun">}}</span></code></pre>
-
+<pre><code>{{&gt; next_more}}</code></pre>
 <p>为什么呢？因为<code>next_more.mustache</code>文件将从执行环境中继承<code>size</code>和<code>start</code>变量。这样一来，你或许把片段标签看作成includes，或者是模版的扩展，虽然字面上来讲这并不正确。
 例如，下面的模版和片段标签：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="kwd">base</span><span class="pun">.</span><span class="pln">mustache</span><span class="pun">:</span><span class="pln">
-</span><span class="str">&lt;h2&gt;</span><span class="typ">Names</span><span class="pun">&lt;</span><span class="str">/h2&gt;
+<pre><code>base.mustache:
+&lt;h2&gt;Names&lt;/h2&gt;
 {{#names}}
   {{&gt; user}}
-{{/</span><span class="pln">names</span><span class="pun">}}</span><span class="pln">
+{{/names}}
 
-user</span><span class="pun">.</span><span class="pln">mustache</span><span class="pun">:</span><span class="pln">
-</span><span class="str">&lt;strong&gt;</span><span class="pun">{{</span><span class="pln">name</span><span class="pun">}}&lt;/</span><span class="pln">strong</span><span class="pun">&gt;</span></code></pre>
-
+user.mustache:
+&lt;strong&gt;{{name}}&lt;/strong&gt;</code></pre>
 <p>可以被当作一个单独的，扩展了的模版：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="tag">&lt;h2&gt;</span><span class="pln">Names</span><span class="tag">&lt;/h2&gt;</span><span class="pln">
+<pre><code>&lt;h2&gt;Names&lt;/h2&gt;
 {{#names}}
-  </span><span class="tag">&lt;strong&gt;</span><span class="pln">{{name}}</span><span class="tag">&lt;/strong&gt;</span><span class="pln">
-{{/names}}</span></code></pre>
-
+  &lt;strong&gt;{{name}}&lt;/strong&gt;
+{{/names}}</code></pre>
 <p>在mustached.js里，一个片段对象可以被当作<code>Mustached.render</code>的第三个参数传入。这个对象应该以片段标签的名字作为属性名，属性值则应为片段标签的值。</p>
-
-<h3 id="自定义分隔符标签">自定义分隔符标签</h3>
-
+<h3>自定义分隔符标签</h3>
 <p>自定义分隔符标签以等号开始，可以将标签分隔符从<code>{{</code>和<code>}}</code>变更为自定义的字符串。
 参考下面这个狗血例子：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code><span class="pun">*</span><span class="pln"> </span><span class="pun">{{</span><span class="pln"> default_tags </span><span class="pun">}}</span><span class="pln">
-</span><span class="pun">{{=&lt;%</span><span class="pln"> </span><span class="pun">%&gt;=}}</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">&lt;%</span><span class="pln"> erb_style_tags </span><span class="pun">%&gt;</span><span class="pln">
-</span><span class="pun">&lt;%={{</span><span class="pln"> </span><span class="pun">}}=%&gt;</span><span class="pln">
-</span><span class="pun">*</span><span class="pln"> </span><span class="pun">{{</span><span class="pln"> default_tags_again </span><span class="pun">}}</span></code></pre>
-
+<pre><code>* {{ default_tags }}
+{{=&lt;% %&gt;=}}
+* &lt;% erb_style_tags %&gt;
+&lt;%={{ }}=%&gt;
+* {{ default_tags_again }}</code></pre>
 <p>这里，我们有一个三项的列表。第一项用的是默认的标签风格，第二项使用了ERB风格，这里我们使用了自定义分隔符标签声明。第三项，通过自定义分隔符声明，又回到了默认的风格。
-参照着<a href="http://google-ctemplate.googlecode.com/svn/trunk/doc/howto.html">ctemplates</a>，这样的做法”对某些语言是有用的，比如TeX。在TeX语言中，双大括号有可能会出现在文本中，这样的双大括号对于markup来说太笨拙了。”
+参照着<a href="http://google-ctemplate.googlecode.com/svn/trunk/doc/howto.html">ctemplates</a>，这样的做法&quot;对某些语言是有用的，比如TeX。在TeX语言中，双大括号有可能会出现在文本中，这样的双大括号对于markup来说太笨拙了。&quot;
 自定义的分隔符不应该再包含空格和等号。</p>
-
-<h3 id="编译的模版">编译的模版</h3>
-
+<h3>编译的模版</h3>
 <p>Mustache模版可以通过<code>Mustache.compile</code>被编译为JavaScript的function以提高渲染性能。
 如果你有模版views需要多次渲染，将模版编译成JavaScript function可以降低每次重新渲染的工作量。
 也可以由服务器端生成预编译的模版，再传递给准备执行JavaScript function的浏览器端，进一步地降低客户端的初始化模版的工作量。</p>
-
-<h4 id="mustachecompile">Mustache.compile</h4>
-
+<h4>Mustache.compile</h4>
 <p>可以使用<code>Mustache.compile</code>来将标准的Mustache字符串模版编译成可复用的Mustache模版function。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> compiledTemplate </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Mustache</span><span class="pun">.</span><span class="pln">compile</span><span class="pun">(</span><span class="pln">stringTemplate</span><span class="pun">);</span></code></pre>
-
+<pre><code class="lang-javascript">var compiledTemplate = Mustache.compile(stringTemplate);</code></pre>
 <p><code>Mustache.compile</code>的返回函数可以被直接执行，以模版数据为参数（可选的第二个参数是片段对象），来最终生成数据。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> templateOutput </span><span class="pun">=</span><span class="pln"> compiledTemplate</span><span class="pun">(</span><span class="pln">templateData</span><span class="pun">);</span></code></pre>
-
-<h4 id="mustachecompilepartial">Mustache.compilePartial</h4>
-
+<pre><code class="lang-javascript">var templateOutput = compiledTemplate(templateData);</code></pre>
+<h4>Mustache.compilePartial</h4>
 <p>模版片段也可以通过<code>Mustache.compilePartial</code>来进行编译。函数的第一个参数是片段出现在父层模版中的名字。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="typ">Mustache</span><span class="pun">.</span><span class="pln">compilePartial</span><span class="pun">(</span><span class="str">'partial-name'</span><span class="pun">,</span><span class="pln"> stringTemplate</span><span class="pun">);</span></code></pre>
-
+<pre><code class="lang-javascript">Mustache.compilePartial(&#39;partial-name&#39;, stringTemplate);</code></pre>
 <p>编译过的片段可以通过<code>Mustache.render</code>和<code>Mustache.compile</code>获取到。</p>
-
 
 
   </div>

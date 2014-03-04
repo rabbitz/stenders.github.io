@@ -4,9 +4,10 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JavaScript功能函数收集</title>
+  <title>JavaScript 常用函数收集</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -25,213 +26,184 @@
 </header>
 <div class="container">
   <div class="row marketing">
-      <h2><a href="javascript:location.reload();">JavaScript功能函数收集</a></h2>
+    
+    <h1>JavaScript 常用函数收集</h1>
+    <p>这些函数方法都是看书学到的，jQuery里也大部分都有对应的实现，而这些是原生方法，今天有空就将它们记录下来，先写10个，以后再继续补充。</p>
+<h4>一、针对对象或数组的复制</h4>
+<h5>1.浅复制</h5>
+<pre><code class="lang-javascript">function extend(parent, child){
+    child = child || {}; // child不存在则新建空白对象
+    for(var i in parent){
+        if(parent.hasOwnProperty(i)){
+            child[i] = parent[i];
+        }
+    }
+    return child;
+}</code></pre>
+<h5>2.深复制</h5>
+<pre><code class="lang-javascript">function deepExtend(parent, child){
+    child = child || {};
+    var tostr = child.toString; // Object.prototype.toString
+    for(var i in parent){
+        if(parent.hasOwnProperty(i)){
+            if(typeof parent[i] === &#39;object&#39;){ // 如果parent[i]为对象
+                child[i] = (tostr.call(parent[i]) === &#39;[object Array]&#39;) ? [] : {}; // 根据情况赋值空白数组或空白对象
+                deepExtend(parent[i], child[i]); // 进行递归复制
+            } else {
+                child[i] = parent[i];
+            }
+        }
+    }
+    return child;
+}
+var a = {&#39;aaa&#39;:111,&#39;bbb&#39;:222,&#39;ccc&#39;:[1,2,3,[4,5,6,[7,8,9]]],&#39;ddd&#39;:{&#39;ss&#39;:1,&#39;dd&#39;:2,&#39;ee&#39;:{&#39;ff&#39;:33,&#39;gg&#39;:55}}};</code></pre>
+<h5>3.利用JSON实现深复制的巧妙方法（via 新浪微博）</h5>
+<pre><code class="lang-javascript">function jsonExtend(parent){
+    var str = JSON.stringify(parent); // 转化成字符串
+    return JSON.parse(str); // 转化成对象
+}</code></pre>
+<h4>二、原型继承</h4>
+<pre><code class="lang-javascript">function create(o){
+    function f(){}
+    f.prototype = o; // 将o设置为代理函数的原型
+    return new f;  // 返回新的空对象，原型为对象o
+}
 
-<p>这些函数方法都是看《JavaScript模式》学到的，jQuery里也大部分都有对应的实现，而这些是原生方法，今天有空就将它们记录下来，先写10个，以后再继续补充。</p>
+function Parent(){
+    this.name = &#39;papa&#39;;
+    this.age = &#39;28&#39;;
+}
+Parent.prototype.say = function(){
+    return &#39;I am &#39; + this.name + &#39;, and I am &#39; + this.age + &#39; years old.&#39;;
+};
+var parent = new Parent;
+var luck = create(parent); // luck已具有parent的属性（name、age）与方法（say）</code></pre>
+<h4>三、类继承</h4>
+<pre><code class="lang-javascript">function inherit(parent, child){
+    function F(){}
+    F.prototype = parent.prototype; // 将超类与代理函数共享原型
+    child.prototype = new F; // 新建空对象作为child原型
+    child.uber = parent.prototype; // 在child上保存超类的原型
+    child.prototype.constructor = child; // 重置child的constructor指针
+}</code></pre>
+<h4>四、事件绑定兼容IE与W3C模式</h4>
+<pre><code class="lang-javascript">var Utility = {
+    addEvent : null,
+    removeEvent : null
+};
+(function(){
+    if(window.addEventListener){ // W3C模式
+        Utility.addEvent = function(ele, type, handler){
+            ele.addEventListener(type, handler, false);
+        };
+        Utility.removeEvent = function(ele, type, handler){
+            ele.removeEventListender(type, handler, false);
+        };
+    } else if(window.attachEvent){ // IE6+ 模式
+        Utility.addEvent = function(ele, type, handler){
+            ele.attachEvent(&#39;on&#39; + type, handler);
+        };
+        Utility.removeEvent = function(ele, type, handler){
+            ele.detachEvent(&#39;on&#39; + type, handler);
+        };
+    }
+})();</code></pre>
+<h4>五、函数context绑定</h4>
+<pre><code class="lang-javascript">function proxy(context, fn){ // 支持两种参数方法(obj, obj.mothod)、(obj,&#39;method&#39;)
+    var slice = Array.prototype.slice, // 缓存slice方法
+        args = slice.call(arguments, 2); // 分离出参数
+    if(typeof fn === &#39;string&#39;){ // 如果为第二种形式
+        fn = context[fn];
+    }
+    return function(){ // 返回应用了context为执行环境的fn，并合并任意数量参数
+        fn.apply(context, args.concat(slice.call(arguments)));
+    };
+}</code></pre>
+<h4>六、函数curry化通用函数</h4>
+<pre><code class="lang-javascript">function curry(fn){
+    var slice = Array.prototype.slice,
+        args = slice.call(arguments, 1);
+    return function(){
+        return fn.apply(null, args.concat(slice.call(arguments)));//合并任意参数
+    };
+}</code></pre>
+<h4>七、函数沙箱模式</h4>
+<pre><code class="lang-javascript">function SandBox(){ //参数有三种类型(&#39;dom&#39;,&#39;event&#39;,callback),(&#39;*&#39;, callback), (callback)
+    var args = Array.prototype.slice.call(arguments);
+    var callback = args.pop(); // 分离出callback
+    var models = (args[0] &amp;&amp; typeof args[0] === &#39;string&#39;) ? args : args[0]; //取出正确的模块名字，models类型为数组
+    if(!(this instanceof SandBox)) { // 强制使用new
+        return new SandBox(args, callback);
+    }
+    if(!models || models[0] === &#39;*&#39;){ //如果为后两种参数类型，则加载全部模块
+        models = [];
+        for(var i in SandBox.models){
+            if(SandBox.models.hasOwnProperty(i)){
+                models.push(i);
+            }
+        }
+    }
+    for(i = models.length; i --;){
+        SandBox.models[models[i]](this); // 运行模块
+    }
+    callback(this); // 运行callback
+}
 
-<h4 id="一针对对象或数组的复制">一、针对对象或数组的复制</h4>
+SandBox.models = {}; // 模块存储位置
+SandBox.models.dom = function(box){
+    box.get = function(){};
+    box.set = function(){};
+};
+SandBox.models.event = function(box){
+    box.addEvent = function(){};
+    box.removeEvent = function(){};
+};
+// ...</code></pre>
+<h4>八、method方法</h4>
+<pre><code class="lang-javascript">if(typeof Function.prototype.method !== &#39;function&#39;){ // 如果不存在该方法
+    Function.prototype.method = function(name, fn){
+        this.prototype[name] = fn;
+        return this;
+    }
+}</code></pre>
+<h4>九、DOM查找</h4>
+<h4>1.前一个兄弟节点</h4>
+<pre><code class="lang-javascript">function prev(ele){
+    ele = ele.previousSibling;
+    return ele.nodeType === 1 ? ele : prev(ele);
+}</code></pre>
+<h5>2.后一个兄弟节点</h5>
+<pre><code class="lang-javascript">function next(ele){
+    ele = ele.nextSibling;
+    return ele.nodeType === 1 ? ele : next(ele);
+}</code></pre>
+<h5>3.getElementsByClassName实现</h5>
+<pre><code class="lang-javascript">function getElementsByClassName(clsName, context){
+    if(document.getElementsByClassName){ // 委托给浏览器
+        return context.getElementsByClassName(clsName);
+    }
+    var ret = [];
+    context = context || document;
+    var total = context.getElementsByTagName(&#39;*&#39;);
+    for(var i = 0, len = total.length; i &lt; len; i ++){
+        var classNames = total[i].className.split(&#39; &#39;);
+        for(var j = classNames.length; j --;){
+            if(classNames[j] === clsName){
+                ret.push(total[i]);
+            }
+        }
+    }
+    return ret;
+}</code></pre>
+<h4>十、window.onload合并</h4>
+<pre><code class="lang-javascript">function addLoadEvent(fn){
+    var old = window.onload;
+    window.onload = (typeof old !== &#39;function&#39;) ? fn : function(){ // 合并已有的onload
+        old();
+        fn();
+    };
+}</code></pre>
 
-<h5 id="浅复制">1.浅复制</h5>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> extend</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">,</span><span class="pln"> child</span><span class="pun">){</span><span class="pln">
-    child </span><span class="pun">=</span><span class="pln"> child </span><span class="pun">||</span><span class="pln"> </span><span class="pun">{};</span><span class="pln"> </span><span class="com">// child不存在则新建空白对象</span><span class="pln">
-    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="kwd">in</span><span class="pln"> parent</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">.</span><span class="pln">hasOwnProperty</span><span class="pun">(</span><span class="pln">i</span><span class="pun">)){</span><span class="pln">
-            child</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> parent</span><span class="pun">[</span><span class="pln">i</span><span class="pun">];</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> child</span><span class="pun">;</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h5 id="深复制">2.深复制</h5>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> deepExtend</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">,</span><span class="pln"> child</span><span class="pun">){</span><span class="pln">
-    child </span><span class="pun">=</span><span class="pln"> child </span><span class="pun">||</span><span class="pln"> </span><span class="pun">{};</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> tostr </span><span class="pun">=</span><span class="pln"> child</span><span class="pun">.</span><span class="pln">toString</span><span class="pun">;</span><span class="pln"> </span><span class="com">// Object.prototype.toString</span><span class="pln">
-    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="kwd">in</span><span class="pln"> parent</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">.</span><span class="pln">hasOwnProperty</span><span class="pun">(</span><span class="pln">i</span><span class="pun">)){</span><span class="pln">
-            </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> parent</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> </span><span class="str">'object'</span><span class="pun">){</span><span class="pln"> </span><span class="com">// 如果parent[i]为对象</span><span class="pln">
-                child</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">tostr</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">[</span><span class="pln">i</span><span class="pun">])</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> </span><span class="str">'[object Array]'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> </span><span class="pun">[]</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="pun">{};</span><span class="pln"> </span><span class="com">// 根据情况赋值空白数组或空白对象</span><span class="pln">
-                deepExtend</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">[</span><span class="pln">i</span><span class="pun">],</span><span class="pln"> child</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]);</span><span class="pln"> </span><span class="com">// 进行递归复制</span><span class="pln">
-            </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-                child</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> parent</span><span class="pun">[</span><span class="pln">i</span><span class="pun">];</span><span class="pln">
-            </span><span class="pun">}</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> child</span><span class="pun">;</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> a </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="str">'aaa'</span><span class="pun">:</span><span class="lit">111</span><span class="pun">,</span><span class="str">'bbb'</span><span class="pun">:</span><span class="lit">222</span><span class="pun">,</span><span class="str">'ccc'</span><span class="pun">:[</span><span class="lit">1</span><span class="pun">,</span><span class="lit">2</span><span class="pun">,</span><span class="lit">3</span><span class="pun">,[</span><span class="lit">4</span><span class="pun">,</span><span class="lit">5</span><span class="pun">,</span><span class="lit">6</span><span class="pun">,[</span><span class="lit">7</span><span class="pun">,</span><span class="lit">8</span><span class="pun">,</span><span class="lit">9</span><span class="pun">]]],</span><span class="str">'ddd'</span><span class="pun">:{</span><span class="str">'ss'</span><span class="pun">:</span><span class="lit">1</span><span class="pun">,</span><span class="str">'dd'</span><span class="pun">:</span><span class="lit">2</span><span class="pun">,</span><span class="str">'ee'</span><span class="pun">:{</span><span class="str">'ff'</span><span class="pun">:</span><span class="lit">33</span><span class="pun">,</span><span class="str">'gg'</span><span class="pun">:</span><span class="lit">55</span><span class="pun">}}};</span></code></pre>
-
-<h5 id="利用json实现深复制的巧妙方法via-新浪微博">3.利用JSON实现深复制的巧妙方法（via 新浪微博）</h5>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> jsonExtend</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> str </span><span class="pun">=</span><span class="pln"> JSON</span><span class="pun">.</span><span class="pln">stringify</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 转化成字符串</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> JSON</span><span class="pun">.</span><span class="pln">parse</span><span class="pun">(</span><span class="pln">str</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 转化成对象</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="二原型继承">二、原型继承</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> create</span><span class="pun">(</span><span class="pln">o</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">function</span><span class="pln"> f</span><span class="pun">(){}</span><span class="pln">
-    f</span><span class="pun">.</span><span class="pln">prototype </span><span class="pun">=</span><span class="pln"> o</span><span class="pun">;</span><span class="pln"> </span><span class="com">// 将o设置为代理函数的原型</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> f</span><span class="pun">;</span><span class="pln">  </span><span class="com">// 返回新的空对象，原型为对象o</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-
-</span><span class="kwd">function</span><span class="pln"> </span><span class="typ">Parent</span><span class="pun">(){</span><span class="pln">
-    </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">name </span><span class="pun">=</span><span class="pln"> </span><span class="str">'papa'</span><span class="pun">;</span><span class="pln">
-    </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">age </span><span class="pun">=</span><span class="pln"> </span><span class="str">'28'</span><span class="pun">;</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-</span><span class="typ">Parent</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">say </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="str">'I am '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">name </span><span class="pun">+</span><span class="pln"> </span><span class="str">', and I am '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">age </span><span class="pun">+</span><span class="pln"> </span><span class="str">' years old.'</span><span class="pun">;</span><span class="pln">
-</span><span class="pun">};</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> parent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Parent</span><span class="pun">;</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> luck </span><span class="pun">=</span><span class="pln"> create</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">);</span><span class="pln"> </span><span class="com">// luck已具有parent的属性（name、age）与方法（say）</span></code></pre>
-
-<h4 id="三类继承">三、类继承</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> inherit</span><span class="pun">(</span><span class="pln">parent</span><span class="pun">,</span><span class="pln"> child</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">function</span><span class="pln"> F</span><span class="pun">(){}</span><span class="pln">
-    F</span><span class="pun">.</span><span class="pln">prototype </span><span class="pun">=</span><span class="pln"> parent</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">;</span><span class="pln"> </span><span class="com">// 将超类与代理函数共享原型</span><span class="pln">
-    child</span><span class="pun">.</span><span class="pln">prototype </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> F</span><span class="pun">;</span><span class="pln"> </span><span class="com">// 新建空对象作为child原型</span><span class="pln">
-    child</span><span class="pun">.</span><span class="pln">uber </span><span class="pun">=</span><span class="pln"> parent</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">;</span><span class="pln"> </span><span class="com">// 在child上保存超类的原型</span><span class="pln">
-    child</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">constructor </span><span class="pun">=</span><span class="pln"> child</span><span class="pun">;</span><span class="pln"> </span><span class="com">// 重置child的constructor指针</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="四事件绑定兼容ie与wc模式">四、事件绑定兼容IE与W3C模式</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> </span><span class="typ">Utility</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    addEvent </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">null</span><span class="pun">,</span><span class="pln">
-    removeEvent </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">null</span><span class="pln">
-</span><span class="pun">};</span><span class="pln">
-</span><span class="pun">(</span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">window</span><span class="pun">.</span><span class="pln">addEventListener</span><span class="pun">){</span><span class="pln"> </span><span class="com">// W3C模式</span><span class="pln">
-        </span><span class="typ">Utility</span><span class="pun">.</span><span class="pln">addEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">,</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">){</span><span class="pln">
-            ele</span><span class="pun">.</span><span class="pln">addEventListener</span><span class="pun">(</span><span class="pln">type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">};</span><span class="pln">
-        </span><span class="typ">Utility</span><span class="pun">.</span><span class="pln">removeEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">,</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">){</span><span class="pln">
-            ele</span><span class="pun">.</span><span class="pln">removeEventListender</span><span class="pun">(</span><span class="pln">type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">};</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">window</span><span class="pun">.</span><span class="pln">attachEvent</span><span class="pun">){</span><span class="pln"> </span><span class="com">// IE6+ 模式</span><span class="pln">
-        </span><span class="typ">Utility</span><span class="pun">.</span><span class="pln">addEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">,</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">){</span><span class="pln">
-            ele</span><span class="pun">.</span><span class="pln">attachEvent</span><span class="pun">(</span><span class="str">'on'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">};</span><span class="pln">
-        </span><span class="typ">Utility</span><span class="pun">.</span><span class="pln">removeEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">,</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">){</span><span class="pln">
-            ele</span><span class="pun">.</span><span class="pln">detachEvent</span><span class="pun">(</span><span class="str">'on'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> type</span><span class="pun">,</span><span class="pln"> handler</span><span class="pun">);</span><span class="pln">
-        </span><span class="pun">};</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">})();</span></code></pre>
-
-<h4 id="五函数context绑定">五、函数context绑定</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> proxy</span><span class="pun">(</span><span class="pln">context</span><span class="pun">,</span><span class="pln"> fn</span><span class="pun">){</span><span class="pln"> </span><span class="com">// 支持两种参数方法(obj, obj.mothod)、(obj,'method')</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> slice </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">,</span><span class="pln"> </span><span class="com">// 缓存slice方法</span><span class="pln">
-        args </span><span class="pun">=</span><span class="pln"> slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">,</span><span class="pln"> </span><span class="lit">2</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 分离出参数</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> fn </span><span class="pun">===</span><span class="pln"> </span><span class="str">'string'</span><span class="pun">){</span><span class="pln"> </span><span class="com">// 如果为第二种形式</span><span class="pln">
-        fn </span><span class="pun">=</span><span class="pln"> context</span><span class="pun">[</span><span class="pln">fn</span><span class="pun">];</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln"> </span><span class="com">// 返回应用了context为执行环境的fn，并合并任意数量参数</span><span class="pln">
-        fn</span><span class="pun">.</span><span class="pln">apply</span><span class="pun">(</span><span class="pln">context</span><span class="pun">,</span><span class="pln"> args</span><span class="pun">.</span><span class="pln">concat</span><span class="pun">(</span><span class="pln">slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">)));</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="六函数curry化通用函数">六、函数curry化通用函数</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> curry</span><span class="pun">(</span><span class="pln">fn</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> slice </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">,</span><span class="pln">
-        args </span><span class="pun">=</span><span class="pln"> slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">,</span><span class="pln"> </span><span class="lit">1</span><span class="pun">);</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> fn</span><span class="pun">.</span><span class="pln">apply</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">,</span><span class="pln"> args</span><span class="pun">.</span><span class="pln">concat</span><span class="pun">(</span><span class="pln">slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">)));</span><span class="com">//合并任意参数</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="七函数沙箱模式">七、函数沙箱模式</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> </span><span class="typ">SandBox</span><span class="pun">(){</span><span class="pln"> </span><span class="com">//参数有三种类型('dom','event',callback),('*', callback), (callback)</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> args </span><span class="pun">=</span><span class="pln"> </span><span class="typ">Array</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">.</span><span class="pln">call</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">);</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> callback </span><span class="pun">=</span><span class="pln"> args</span><span class="pun">.</span><span class="pln">pop</span><span class="pun">();</span><span class="pln"> </span><span class="com">// 分离出callback</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> models </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="pln">args</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]</span><span class="pln"> </span><span class="pun">&amp;&amp;</span><span class="pln"> </span><span class="kwd">typeof</span><span class="pln"> args</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> </span><span class="str">'string'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> args </span><span class="pun">:</span><span class="pln"> args</span><span class="pun">[</span><span class="lit">0</span><span class="pun">];</span><span class="pln"> </span><span class="com">//取出正确的模块名字，models类型为数组</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(!(</span><span class="kwd">this</span><span class="pln"> </span><span class="kwd">instanceof</span><span class="pln"> </span><span class="typ">SandBox</span><span class="pun">))</span><span class="pln"> </span><span class="pun">{</span><span class="pln"> </span><span class="com">// 强制使用new</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">SandBox</span><span class="pun">(</span><span class="pln">args</span><span class="pun">,</span><span class="pln"> callback</span><span class="pun">);</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(!</span><span class="pln">models </span><span class="pun">||</span><span class="pln"> models</span><span class="pun">[</span><span class="lit">0</span><span class="pun">]</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> </span><span class="str">'*'</span><span class="pun">){</span><span class="pln"> </span><span class="com">//如果为后两种参数类型，则加载全部模块</span><span class="pln">
-        models </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[];</span><span class="pln">
-        </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="kwd">in</span><span class="pln"> </span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models</span><span class="pun">){</span><span class="pln">
-            </span><span class="kwd">if</span><span class="pun">(</span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models</span><span class="pun">.</span><span class="pln">hasOwnProperty</span><span class="pun">(</span><span class="pln">i</span><span class="pun">)){</span><span class="pln">
-                models</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="pln">i</span><span class="pun">);</span><span class="pln">
-            </span><span class="pun">}</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">for</span><span class="pun">(</span><span class="pln">i </span><span class="pun">=</span><span class="pln"> models</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">--;){</span><span class="pln">
-        </span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models</span><span class="pun">[</span><span class="pln">models</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]](</span><span class="kwd">this</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 运行模块</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    callback</span><span class="pun">(</span><span class="kwd">this</span><span class="pun">);</span><span class="pln"> </span><span class="com">// 运行callback</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-
-</span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{};</span><span class="pln"> </span><span class="com">// 模块存储位置</span><span class="pln">
-</span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models</span><span class="pun">.</span><span class="pln">dom </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">box</span><span class="pun">){</span><span class="pln">
-    box</span><span class="pun">.</span><span class="kwd">get</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){};</span><span class="pln">
-    box</span><span class="pun">.</span><span class="kwd">set</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){};</span><span class="pln">
-</span><span class="pun">};</span><span class="pln">
-</span><span class="typ">SandBox</span><span class="pun">.</span><span class="pln">models</span><span class="pun">.</span><span class="kwd">event</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">box</span><span class="pun">){</span><span class="pln">
-    box</span><span class="pun">.</span><span class="pln">addEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){};</span><span class="pln">
-    box</span><span class="pun">.</span><span class="pln">removeEvent </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){};</span><span class="pln">
-</span><span class="pun">};</span><span class="pln">
-</span><span class="com">// ...</span></code></pre>
-
-<h4 id="八method方法">八、method方法</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> </span><span class="typ">Function</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">method </span><span class="pun">!==</span><span class="pln"> </span><span class="str">'function'</span><span class="pun">){</span><span class="pln"> </span><span class="com">// 如果不存在该方法</span><span class="pln">
-    </span><span class="typ">Function</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">.</span><span class="pln">method </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="pln">name</span><span class="pun">,</span><span class="pln"> fn</span><span class="pun">){</span><span class="pln">
-        </span><span class="kwd">this</span><span class="pun">.</span><span class="pln">prototype</span><span class="pun">[</span><span class="pln">name</span><span class="pun">]</span><span class="pln"> </span><span class="pun">=</span><span class="pln"> fn</span><span class="pun">;</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">this</span><span class="pun">;</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="九dom查找">九、DOM查找</h4>
-
-<h4 id="前一个兄弟节点">1.前一个兄弟节点</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> prev</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">){</span><span class="pln">
-    ele </span><span class="pun">=</span><span class="pln"> ele</span><span class="pun">.</span><span class="pln">previousSibling</span><span class="pun">;</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> ele</span><span class="pun">.</span><span class="pln">nodeType </span><span class="pun">===</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> ele </span><span class="pun">:</span><span class="pln"> prev</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">);</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h5 id="后一个兄弟节点">2.后一个兄弟节点</h5>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> </span><span class="kwd">next</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">){</span><span class="pln">
-    ele </span><span class="pun">=</span><span class="pln"> ele</span><span class="pun">.</span><span class="pln">nextSibling</span><span class="pun">;</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> ele</span><span class="pun">.</span><span class="pln">nodeType </span><span class="pun">===</span><span class="pln"> </span><span class="lit">1</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> ele </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">next</span><span class="pun">(</span><span class="pln">ele</span><span class="pun">);</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h5 id="getelementsbyclassname实现">3.getElementsByClassName实现</h5>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> getElementsByClassName</span><span class="pun">(</span><span class="pln">clsName</span><span class="pun">,</span><span class="pln"> context</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">document</span><span class="pun">.</span><span class="pln">getElementsByClassName</span><span class="pun">){</span><span class="pln"> </span><span class="com">// 委托给浏览器</span><span class="pln">
-        </span><span class="kwd">return</span><span class="pln"> context</span><span class="pun">.</span><span class="pln">getElementsByClassName</span><span class="pun">(</span><span class="pln">clsName</span><span class="pun">);</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> ret </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[];</span><span class="pln">
-    context </span><span class="pun">=</span><span class="pln"> context </span><span class="pun">||</span><span class="pln"> document</span><span class="pun">;</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> total </span><span class="pun">=</span><span class="pln"> context</span><span class="pun">.</span><span class="pln">getElementsByTagName</span><span class="pun">(</span><span class="str">'*'</span><span class="pun">);</span><span class="pln">
-    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> len </span><span class="pun">=</span><span class="pln"> total</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> len</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++){</span><span class="pln">
-        </span><span class="kwd">var</span><span class="pln"> classNames </span><span class="pun">=</span><span class="pln"> total</span><span class="pun">[</span><span class="pln">i</span><span class="pun">].</span><span class="pln">className</span><span class="pun">.</span><span class="pln">split</span><span class="pun">(</span><span class="str">' '</span><span class="pun">);</span><span class="pln">
-        </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> j </span><span class="pun">=</span><span class="pln"> classNames</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> j </span><span class="pun">--;){</span><span class="pln">
-            </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">classNames</span><span class="pun">[</span><span class="pln">j</span><span class="pun">]</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> clsName</span><span class="pun">){</span><span class="pln">
-                ret</span><span class="pun">.</span><span class="pln">push</span><span class="pun">(</span><span class="pln">total</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]);</span><span class="pln">
-            </span><span class="pun">}</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> ret</span><span class="pun">;</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<h4 id="十windowonload合并">十、window.onload合并</h4>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> addLoadEvent</span><span class="pun">(</span><span class="pln">fn</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> old </span><span class="pun">=</span><span class="pln"> window</span><span class="pun">.</span><span class="pln">onload</span><span class="pun">;</span><span class="pln">
-    window</span><span class="pun">.</span><span class="pln">onload </span><span class="pun">=</span><span class="pln"> </span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> old </span><span class="pun">!==</span><span class="pln"> </span><span class="str">'function'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> fn </span><span class="pun">:</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln"> </span><span class="com">// 合并已有的onload</span><span class="pln">
-        old</span><span class="pun">();</span><span class="pln">
-        fn</span><span class="pun">();</span><span class="pln">
-    </span><span class="pun">};</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
 
   </div>
 </div>

@@ -5,8 +5,9 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ajax初探</title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
   <link rel="stylesheet" href="/css/font-awesome.min.css" />
-  <link rel="stylesheet" href="/css/default.css" />
+  <link rel="stylesheet" href="/css/style.css" />
   <link rel="stylesheet" href="/css/index.css" />
   <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
@@ -25,241 +26,178 @@
 </header>
 <div class="container">
   <div class="row marketing">
-    <h2><a href="javascript:location.reload();">Ajax初探</a></h2>
-
-
-
-<p>从事前端开发已经两年多，从来没学习和使用过Ajax（此时脸已经通红）。有则只是从jQuery中了解过封装的方法，但是因为没有接触后端服务器，这些方法也几乎没用到过。今天从JavaScript红皮书中读了下Ajax部分，发现并没有想象中的那么难。今天发文当作读书笔记。</p>
-
-<h3 id="ajax简介">Ajax简介</h3>
-
-<p>Ajax技术的核心是XMLHttpRequest对象(简称XHR)。IE5是最先引入XHR对象的浏览器，这个对象的实现经历过3个版本。要生成兼容的XHR对象，需要建立一个通用函数：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> getXHR</span><span class="pun">(){</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(!</span><span class="pln">arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">var</span><span class="pln"> options </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'MSXML2.XMLHttp.6.0'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'MSXML2.XMLHttp.3.0'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'MSXML2.XMLHttp'</span><span class="pun">]</span><span class="pln">
-    </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> len </span><span class="pun">=</span><span class="pln"> options</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> len</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++){</span><span class="pln">
-      </span><span class="kwd">try</span><span class="pun">{</span><span class="pln">
-        </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">ActiveXObject</span><span class="pun">(</span><span class="pln">options</span><span class="pun">[</span><span class="pln">i</span><span class="pun">])</span><span class="pln">
-        arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX </span><span class="pun">=</span><span class="pln"> options</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln">
-        </span><span class="kwd">break</span><span class="pln">
-      </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">catch</span><span class="pun">(</span><span class="pln">e</span><span class="pun">){}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-  </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">ActiveXObject</span><span class="pun">(</span><span class="pln"> arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX </span><span class="pun">)</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
-<p>当IE发布到IE7之前，现代浏览器所支持的XHR标准对象才得以形成。于是在IE7+的浏览器都支持标准XHR。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> xhr </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">XMLHttpRequest</span><span class="pun">()</span></code></pre>
-
-<p>将两个方式合并起来将是：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> getXHR</span><span class="pun">(){</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> </span><span class="typ">XMLHttpRequest</span><span class="pln"> </span><span class="pun">!==</span><span class="pln"> </span><span class="str">'undefined'</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">XMLHttpRequest</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">typeof</span><span class="pln"> </span><span class="typ">ActiveXObject</span><span class="pln"> </span><span class="pun">!==</span><span class="pln"> </span><span class="str">'undefined'</span><span class="pun">){</span><span class="pln">
-    </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX </span><span class="pun">!==</span><span class="pln"> </span><span class="str">'string'</span><span class="pun">){</span><span class="pln">
-      </span><span class="kwd">var</span><span class="pln"> options </span><span class="pun">=</span><span class="pln"> </span><span class="pun">[</span><span class="str">'MSXML2.XMLHttp.6.0'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'MSXML2.XMLHttp.3.0'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'MSXML2.XMLHttp'</span><span class="pun">]</span><span class="pln">
-      </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> i </span><span class="pun">=</span><span class="pln"> </span><span class="lit">0</span><span class="pun">,</span><span class="pln"> len </span><span class="pun">=</span><span class="pln"> options</span><span class="pun">.</span><span class="pln">length</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">&lt;</span><span class="pln"> len</span><span class="pun">;</span><span class="pln"> i </span><span class="pun">++){</span><span class="pln">
-        </span><span class="kwd">try</span><span class="pun">{</span><span class="pln">
-          </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">ActiveXObject</span><span class="pun">(</span><span class="pln">options</span><span class="pun">[</span><span class="pln">i</span><span class="pun">])</span><span class="pln">
-          arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX </span><span class="pun">=</span><span class="pln"> options</span><span class="pun">[</span><span class="pln">i</span><span class="pun">]</span><span class="pln">
-          </span><span class="kwd">break</span><span class="pln">
-        </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">catch</span><span class="pun">(</span><span class="pln">e</span><span class="pun">){}</span><span class="pln">
-      </span><span class="pun">}</span><span class="pln">
-    </span><span class="pun">}</span><span class="pln">
-    </span><span class="kwd">return</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">ActiveXObject</span><span class="pun">(</span><span class="pln">arguments</span><span class="pun">.</span><span class="pln">callee</span><span class="pun">.</span><span class="pln">activeX</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    </span><span class="kwd">throw</span><span class="pln"> </span><span class="kwd">new</span><span class="pln"> </span><span class="typ">Error</span><span class="pun">(</span><span class="str">'no xhr available.'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+    
+    <h1>Ajax初探</h1>
+<h2>Ajax简介</h2>
+<p>Ajax技术的核心是<code>XMLHttpRequest</code>对象(简称<code>XHR</code>)。IE5是最先引入<code>XHR</code>对象的浏览器，这个对象的实现经历过3个版本。要生成兼容的<code>XHR</code>对象，需要建立一个通用函数：</p>
+<pre><code class="lang-javascript">function getXHR(){
+  if(!arguments.callee.activeX){
+    var options = [&#39;MSXML2.XMLHttp.6.0&#39;, &#39;MSXML2.XMLHttp.3.0&#39;, &#39;MSXML2.XMLHttp&#39;]
+    for(var i = 0, len = options.length; i &lt; len; i ++){
+      try{
+        new ActiveXObject(options[i])
+        arguments.callee.activeX = options[i]
+        break
+      } catch(e){}
+    }
+  }
+  return new ActiveXObject( arguments.callee.activeX )
+}</code></pre>
+<p>在IE发布到IE7的时候，现代浏览器所支持的XHR标准对象才得以形成。于是在IE7+的浏览器都支持标准XHR。</p>
+<pre><code class="lang-javascript">var xhr = new XMLHttpRequest()</code></pre>
+<p>将两个方式合并起来是：</p>
+<pre><code class="lang-javascript">function getXHR(){
+  if(typeof XMLHttpRequest !== &#39;undefined&#39;){
+    return new XMLHttpRequest
+  } else if(typeof ActiveXObject !== &#39;undefined&#39;){
+    if(arguments.callee.activeX !== &#39;string&#39;){
+      var options = [&#39;MSXML2.XMLHttp.6.0&#39;, &#39;MSXML2.XMLHttp.3.0&#39;, &#39;MSXML2.XMLHttp&#39;]
+      for(var i = 0, len = options.length; i &lt; len; i ++){
+        try{
+          new ActiveXObject(options[i])
+          arguments.callee.activeX = options[i]
+          break
+        } catch(e){}
+      }
+    }
+    return new ActiveXObject(arguments.callee.activeX)
+  } else {
+    throw new Error(&#39;no xhr available.&#39;)
+  }
+}</code></pre>
 <p>现在就可以在所有浏览器里使用XHR对象了。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> xhr </span><span class="pun">=</span><span class="pln"> getXHR</span><span class="pun">()</span></code></pre>
-
-<h3 id="xhr的使用">XHR的使用</h3>
-
+<pre><code class="lang-javascript">var xhr = getXHR()</code></pre>
+<h2>XHR的使用</h2>
 <p>XHR对象的第一个方法<code>open</code>，它接受3个参数：要发送的请求类型(<code>get</code>、<code>post</code>等)、要发送请求的URL地址、发送请求是否异步(布尔值)。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts.coffee'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">false</span><span class="pun">)</span></code></pre>
-
+<pre><code class="lang-javascript">xhr.open(&#39;get&#39;, &#39;/js/posts.coffee&#39;, false)</code></pre>
 <p>以上表示要发送一个<code>get</code>请求，URL地址是’/js/posts.coffee’，并且是同步发送。但是要获得请求数据，还需要最后一步真正发送请求的语句：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">send</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">)</span></code></pre>
-
+<pre><code class="lang-javascript">xhr.send(null)</code></pre>
 <p><code>send</code>方法接受一个参数，表示作为请求主体发送的数据，如果不需要发送数据，则为了浏览器的兼容性，需要发送参数<code>null</code>。至此，一次完整的请求发送完毕。等待服务器响应之后，会填充<code>xhr</code>的其他属性：</p>
-
-<ol>
-<li>xhr.responseText：作为响应主体返回的文本。</li>
-<li>xhr.responseXML：如果响应的内容类型是“<code>text/xml</code>”、“<code>application/xml</code>”，这个属性将保存响应返回的XML的DOM文档。</li>
-<li>xhr.status：响应的HTTP状态，<code>200</code>表示成功的标志。</li>
-<li>xhr.statusText：HTTP状态说明。</li>
-</ol>
-
+<pre><code class="lang-javascript">xhr.responseText：作为响应主体返回的文本。
+xhr.responseXML：如果响应的内容类型是“text/xml”、“application/xml”，这个属性将保存响应返回的XML的DOM文档。
+xhr.status：响应的HTTP状态，200表示成功的标志。
+xhr.statusText：HTTP状态说明。</code></pre>
 <p>多数情况下，都是发送异步请求，后面的程序才不至于等待响应而继续执行。此时可以检测<code>xhr.readyState</code>属性，它表示请求响应过程的活动阶段，这个属性的取值如下：</p>
-
-<ul>
-<li>0：未初始化。尚未调用<code>open</code>方法</li>
-<li>1：启动。已经调用<code>open</code>方法，但尚未调用<code>send</code>方法</li>
-<li>2：发送。已经调用<code>send</code>方法，但尚未接受到响应</li>
-<li>3：接受。已经接受到部分响应</li>
-<li>4：完成。已经接受到全部数据，已经可以在客户端使用数据。</li>
-</ul>
-
-<p><code>xhr.readyState</code>属性每次改变都会触发一次<code>readystatechange</code>事件。因此可以利用这个事件来检测每次状态变化后的<code>xhr.readyState</code>值。为了保证浏览器兼容性，必须将事件绑定放在<code>open</code>方法前：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'测试开始。'</span><span class="pun">)</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> xhr </span><span class="pun">=</span><span class="pln"> getXHR</span><span class="pun">()</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'获得xhr对象。'</span><span class="pun">)</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">onreadystatechange </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">readyState </span><span class="pun">===</span><span class="pln"> </span><span class="lit">0</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'未初始化'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">readyState </span><span class="pun">===</span><span class="pln"> </span><span class="lit">1</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'启动'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">readyState </span><span class="pun">===</span><span class="pln"> </span><span class="lit">2</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'发送'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">readyState </span><span class="pun">===</span><span class="pln"> </span><span class="lit">3</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'接受'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">readyState </span><span class="pun">===</span><span class="pln"> </span><span class="lit">4</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'完成'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'绑定了事件，还未创建请求。'</span><span class="pun">)</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts.coffee'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'请求已创建，还未发送请求。'</span><span class="pun">)</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">send</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">)</span><span class="pln">
-console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'请求已发送。'</span><span class="pun">)</span><span class="pln">
-</span><span class="com">// 测试开始。</span><span class="pln">
-</span><span class="com">// 获得xhr对象。</span><span class="pln">
-</span><span class="com">// 绑定了事件，还未创建请求。</span><span class="pln">
-</span><span class="com">// 启动</span><span class="pln">
-</span><span class="com">// 请求已创建，还未发送请求。</span><span class="pln">
-</span><span class="com">// 请求已发送。</span><span class="pln">
-</span><span class="com">// 发送</span><span class="pln">
-</span><span class="com">// 接受</span><span class="pln">
-</span><span class="com">// 完成</span></code></pre>
-
+<pre><code class="lang-javascript">0：未初始化。尚未调用open方法
+1：启动。已经调用open方法，但尚未调用send方法
+2：发送。已经调用send方法，但尚未接受到响应
+3：接受。已经接受到部分响应
+4：完成。已经接受到全部数据，已经可以在客户端使用数据。</code></pre>
+<p>xhr.readyState属性每次改变都会触发一次<code>readystatechange</code>事件。因此可以利用这个事件来检测每次状态变化后的<code>xhr.readyState</code>值。为了保证浏览器兼容性，必须将事件绑定放在<code>open</code>方法前：</p>
+<pre><code class="lang-javascript">console.log(&#39;测试开始。&#39;)
+var xhr = getXHR()
+console.log(&#39;获得xhr对象。&#39;)
+xhr.onreadystatechange = function(){
+  if(xhr.readyState === 0){
+    console.log(&#39;未初始化&#39;)
+  } else if(xhr.readyState === 1){
+    console.log(&#39;启动&#39;)
+  } else if(xhr.readyState === 2){
+    console.log(&#39;发送&#39;)
+  } else if(xhr.readyState === 3){
+    console.log(&#39;接受&#39;)
+  } else if(xhr.readyState === 4){
+    console.log(&#39;完成&#39;)
+  }
+}
+console.log(&#39;绑定了事件，还未创建请求。&#39;)
+xhr.open(&#39;get&#39;, &#39;/js/posts.coffee&#39;, true)
+console.log(&#39;请求已创建，还未发送请求。&#39;)
+xhr.send(null)
+console.log(&#39;请求已发送。&#39;)
+// 测试开始。
+// 获得xhr对象。
+// 绑定了事件，还未创建请求。
+// 启动
+// 请求已创建，还未发送请求。
+// 请求已发送。
+// 发送
+// 接受
+// 完成</code></pre>
 <p>如果将<code>open</code>方法里的<code>true</code>改为<code>false</code>，表示要同步请求，则打印结果是：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="com">// 测试开始。</span><span class="pln">
-</span><span class="com">// 获得xhr对象。</span><span class="pln">
-</span><span class="com">// 绑定了事件，还未创建请求。</span><span class="pln">
-</span><span class="com">// 启动</span><span class="pln">
-</span><span class="com">// 请求已创建，还未发送请求。</span><span class="pln">
-</span><span class="com">// 完成</span><span class="pln">
-</span><span class="com">// 请求已发送。</span></code></pre>
-
+<pre><code class="lang-javascript">// 测试开始。
+// 获得xhr对象。
+// 绑定了事件，还未创建请求。
+// 启动
+// 请求已创建，还未发送请求。
+// 完成
+// 请求已发送。</code></pre>
 <p>以上代码利用了DOM 0级方法为对象绑定事件，只是为了浏览器兼容性，而且在事件里没有传递<code>event</code>对象，内部也没有使用<code>this</code>关键字来指代当前<code>xhr</code>对象，都是为了保证在所有浏览器里都能正常执行，避免错误发生。</p>
-
-<h3 id="get请求">GET请求</h3>
-
+<h2>GET请求</h2>
 <p>GET请求最常用于向服务器获取信息。可以将查询字符串参数追加至URL的末尾，以便将信息发送给服务器，而且查询字符串则必须经过<code>encodeURIComponent</code>进行编码，再放至URL末尾，所有名值对都有以和号(<code>&amp;</code>)分割：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts?name=luck&amp;age=28'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span></code></pre>
-
+<pre><code class="lang-javascript">xhr.open(&#39;get&#39;, &#39;/js/posts?name=luck&amp;age=28&#39;, true)</code></pre>
 <p>可以用这个函数来处理末尾查询字符串：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">function</span><span class="pln"> addURIParam</span><span class="pun">(</span><span class="pln">url</span><span class="pun">,</span><span class="pln"> obj</span><span class="pun">){</span><span class="pln">
-  </span><span class="kwd">var</span><span class="pln"> value
-  url </span><span class="pun">+=</span><span class="pln"> url</span><span class="pun">.</span><span class="pln">indexOf</span><span class="pun">(</span><span class="str">'?'</span><span class="pun">)</span><span class="pln"> </span><span class="pun">===</span><span class="pln"> </span><span class="pun">-</span><span class="lit">1</span><span class="pln"> </span><span class="pun">?</span><span class="pln"> </span><span class="str">'?'</span><span class="pln"> </span><span class="pun">:</span><span class="pln"> </span><span class="str">'&amp;'</span><span class="pln">
-  </span><span class="kwd">for</span><span class="pun">(</span><span class="kwd">var</span><span class="pln"> key </span><span class="kwd">in</span><span class="pln"> obj</span><span class="pun">){</span><span class="pln">
-    value </span><span class="pun">=</span><span class="pln"> obj</span><span class="pun">[</span><span class="pln">key</span><span class="pun">]</span><span class="pln">
-    url </span><span class="pun">+=</span><span class="pln"> encodeURIComponent</span><span class="pun">(</span><span class="pln">key</span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">'='</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> encodeURIComponent</span><span class="pun">(</span><span class="pln">value</span><span class="pun">)</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">'&amp;'</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-  </span><span class="kwd">return</span><span class="pln"> url</span><span class="pun">.</span><span class="pln">slice</span><span class="pun">(</span><span class="lit">0</span><span class="pun">,</span><span class="pln"> </span><span class="pun">-</span><span class="lit">1</span><span class="pun">)</span><span class="pln">
-</span><span class="pun">}</span></code></pre>
-
+<pre><code class="lang-javascript">function addURIParam(url, obj){
+  var value
+  url += url.indexOf(&#39;?&#39;) === -1 ? &#39;?&#39; : &#39;&amp;&#39;
+  for(var key in obj){
+    value = obj[key]
+    url += encodeURIComponent(key) + &#39;=&#39; + encodeURIComponent(value) + &#39;&amp;&#39;
+  }
+  return url.slice(0, -1)
+}</code></pre>
 <p>使用方法如下：</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> url </span><span class="pun">=</span><span class="pln"> </span><span class="str">'/js/posts'</span><span class="pln">
-</span><span class="kwd">var</span><span class="pln"> query </span><span class="pun">=</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-  name</span><span class="pun">:</span><span class="str">'luck Chung'</span><span class="pun">,</span><span class="pln">
-  age</span><span class="pun">:</span><span class="pln"> </span><span class="lit">28</span><span class="pun">,</span><span class="pln">
-  job</span><span class="pun">:</span><span class="pln"> </span><span class="str">'web developer'</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-url </span><span class="pun">=</span><span class="pln"> addURIParam</span><span class="pun">(</span><span class="pln">url</span><span class="pun">,</span><span class="pln"> query</span><span class="pun">)</span><span class="pln"> </span><span class="com">// "/js/posts?name=luck%20Chung&amp;age=28&amp;job=web%20developer"</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> url</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span></code></pre>
-
-<h3 id="post请求">POST请求</h3>
-
+<pre><code class="lang-javascript">var url = &#39;/js/posts&#39;
+var query = {
+  name:&#39;luck Chung&#39;,
+  age: 28,
+  job: &#39;web developer&#39;
+}
+url = addURIParam(url, query) // &quot;/js/posts?name=luck%20Chung&amp;age=28&amp;job=web%20developer&quot;
+xhr.open(&#39;get&#39;, url, true)</code></pre>
+<h2>POST请求</h2>
 <p>与GET请求相比，POST请求可以发送更多的数据，并且数据类型不限。将<code>open</code>方法第一个参数改成<code>post</code>就能创建一个POST请求。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="pln">xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'post'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span></code></pre>
-
+<pre><code class="lang-javascript">xhr.open(&#39;post&#39;, &#39;/js/posts&#39;, true)</code></pre>
 <p>发送POST请求的第二步就是向<code>send</code>方法中传入某些数据。比如，将表单的输入域的值(包括但不限于用户名、密码、邮箱、上传的图片，上传的文件等)序列化之后的数据，服务器必须有对应的程序来解析提交的数据。</p>
-
-<h3 id="进度事件">进度事件</h3>
-
+<h2>进度事件</h2>
 <p>Ajax有6个进度事件：</p>
-
-<ol>
-<li>loadstart：在接收到响应数据的第一个字节时触发</li>
-<li>progress：在接受响应期间持续不断地触发</li>
-<li>error：在请求发生错误时触发</li>
-<li>abort：在因为调用<code>abort</code>方法而终止连接时触发</li>
-<li>load：在接收到完整的响应数据时触发</li>
-<li>loadend：在通信完成或者触发<code>error</code>、<code>abort</code>或<code>load</code>事件后触发</li>
-</ol>
-
+<pre><code>loadstart：在接收到响应数据的第一个字节时触发
+progress：在接受响应期间持续不断地触发
+error：在请求发生错误时触发
+abort：在因为调用abort方法而终止连接时触发
+load：在接收到完整的响应数据时触发
+loadend：在通信完成或者触发error、abort或load事件后触发</code></pre>
 <p>每个请求都从出发<code>loadstart</code>事件开始，接下来是一个或多个<code>progress</code>事件，然后出发<code>error</code>、<code>abort</code>或者<code>load</code>事件中的一个，最后以触发<code>loadend</code>事件结束。IE8+只支持<code>load</code>事件。</p>
-
-<h4 id="load事件"><code>load</code>事件</h4>
-
-<p><code>load</code>事件表示响应接受完毕将触发的事件，因此也将没必要去检查<code>readyState</code>属性了。</p>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> xhr </span><span class="pun">=</span><span class="pln"> getXHR</span><span class="pun">()</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">onload </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">status </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="lit">200</span><span class="pln"> </span><span class="pun">&amp;&amp;</span><span class="pln"> xhr</span><span class="pun">.</span><span class="pln">status </span><span class="pun">&lt;</span><span class="pln"> </span><span class="lit">305</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'success!'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'unsuccess:'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> xhr</span><span class="pun">.</span><span class="pln">status</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts.coffee'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">send</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">)</span></code></pre>
-
+<h3>load事件</h3>
+<pre><code class="lang-load```事件表示响应接受完毕将触发的事件，因此也将没必要去检查```readyState```属性了。">```javascript
+var xhr = getXHR()
+xhr.onload = function(){
+  if(xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 305){
+    console.log(&#39;success!&#39;)
+  } else {
+    console.log(&#39;unsuccess:&#39; + xhr.status)
+  }
+}
+xhr.open(&#39;get&#39;, &#39;/js/posts.coffee&#39;, true)
+xhr.send(null)</code></pre>
 <p>只要浏览器接收到响应，不管状态如何，都会触发<code>load</code>事件，但是还需要检查<code>status</code>属性，才能确定数数据是否真的已经可以用了。</p>
-
-<h4 id="progress事件"><code>progress</code>事件</h4>
-
+<h3>progress事件</h3>
 <p><code>progress</code>事件在浏览器接受新数据期间周期性的触发，而<code>onprogress</code>事件处理程序接受一个<code>event</code>对象作为参数，其<code>target</code>对象就是当前的<code>xhr</code>对象，它还包括其他三个属性：</p>
-
-<ol>
-<li>lengthComputable 表示进度信息是否可用的布尔值</li>
-<li>position 表示已经接受到的字节数</li>
-<li>totalSize 表示根据<code>Content-Length</code>响应头确定的预期字节数</li>
-</ol>
-
+<pre><code>lengthComputable 表示进度信息是否可用的布尔值
+position 表示已经接受到的字节数
+totalSize 表示根据Content-Length响应头确定的预期字节数</code></pre>
 <p>这样我们就可以创建进度的百分比了。</p>
+<pre><code>&lt;div id=&quot;status&quot;&gt;&lt;/div&gt;</code></pre>
+<pre><code class="lang-javascript">var xhr = getXHR()
+xhr.onload = function(){
+  if(xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 305){
+    console.log(&#39;success!&#39;)
+  } else {
+    console.log(&#39;unsuccess:&#39; + xhr.status)
+  }
+}
 
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="tag">&lt;div</span><span class="pln"> </span><span class="atn">id</span><span class="pun">=</span><span class="atv">"status"</span><span class="tag">&gt;&lt;/div&gt;</span></code></pre>
-
-<pre class="prettyprint prettyprinted" style=""><code class="language-javascript"><span class="kwd">var</span><span class="pln"> xhr </span><span class="pun">=</span><span class="pln"> getXHR</span><span class="pun">()</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">onload </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(){</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(</span><span class="pln">xhr</span><span class="pun">.</span><span class="pln">status </span><span class="pun">&gt;=</span><span class="pln"> </span><span class="lit">200</span><span class="pln"> </span><span class="pun">&amp;&amp;</span><span class="pln"> xhr</span><span class="pun">.</span><span class="pln">status </span><span class="pun">&lt;</span><span class="pln"> </span><span class="lit">305</span><span class="pun">){</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'success!'</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln"> </span><span class="kwd">else</span><span class="pln"> </span><span class="pun">{</span><span class="pln">
-    console</span><span class="pun">.</span><span class="pln">log</span><span class="pun">(</span><span class="str">'unsuccess:'</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> xhr</span><span class="pun">.</span><span class="pln">status</span><span class="pun">)</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-
-xhr</span><span class="pun">.</span><span class="pln">onprogress </span><span class="pun">=</span><span class="pln"> </span><span class="kwd">function</span><span class="pun">(</span><span class="kwd">event</span><span class="pun">){</span><span class="pln">
-  </span><span class="kwd">var</span><span class="pln"> status </span><span class="pun">=</span><span class="pln"> document</span><span class="pun">.</span><span class="pln">getElementById</span><span class="pun">(</span><span class="str">'status'</span><span class="pun">)</span><span class="pln">
-  </span><span class="kwd">if</span><span class="pun">(</span><span class="kwd">event</span><span class="pun">.</span><span class="pln">lengthComputable</span><span class="pun">){</span><span class="pln">
-    status</span><span class="pun">.</span><span class="pln">innerHTML </span><span class="pun">=</span><span class="pln"> </span><span class="str">'recieved: '</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="typ">Math</span><span class="pun">.</span><span class="pln">ceil</span><span class="pun">(</span><span class="kwd">event</span><span class="pun">.</span><span class="pln">position </span><span class="pun">/</span><span class="pln"> </span><span class="kwd">event</span><span class="pun">.</span><span class="pln">totalSize</span><span class="pun">)</span><span class="pln"> </span><span class="pun">*</span><span class="pln"> </span><span class="lit">100</span><span class="pln"> </span><span class="pun">+</span><span class="pln"> </span><span class="str">'%'</span><span class="pln">
-  </span><span class="pun">}</span><span class="pln">
-</span><span class="pun">}</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">open</span><span class="pun">(</span><span class="str">'get'</span><span class="pun">,</span><span class="pln"> </span><span class="str">'/js/posts.coffee'</span><span class="pun">,</span><span class="pln"> </span><span class="kwd">true</span><span class="pun">)</span><span class="pln">
-xhr</span><span class="pun">.</span><span class="pln">send</span><span class="pun">(</span><span class="kwd">null</span><span class="pun">)</span></code></pre>
-
+xhr.onprogress = function(event){
+  var status = document.getElementById(&#39;status&#39;)
+  if(event.lengthComputable){
+    status.innerHTML = &#39;recieved: &#39; + Math.ceil(event.position / event.totalSize) * 100 + &#39;%&#39;
+  }
+}
+xhr.open(&#39;get&#39;, &#39;/js/posts.coffee&#39;, true)
+xhr.send(null)</code></pre>
 <p>为了确保正常执行，<code>onprogress</code>事件必须在<code>open</code>方法之前添加。</p>
-
-<h3 id="后记">后记</h3>
-
-<p>以上就是我读JavaScript红皮书中AJAX前半部分学到的，很多是照书抄的，还有写不兼容的问题没往这里写。接下来我会读跨域部分的内容，然后再继续发读书笔记。</p>
-
+<h2>后记</h2>
+<p>以上就是我读JavaScript红皮书中AJAX前半部分学到的，很多是照书抄的，还有些不兼容的问题没往这里写。接下来我会读跨域部分的内容，然后再继续发读书笔记。</p>
 
 
   </div>
