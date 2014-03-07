@@ -10,12 +10,20 @@
   var minute = now.getMinutes()
   var second = now.getSeconds()
   var getKF = function( time, pointer ){
+  	var from, to
+  	if(pointer === 'hour'){
+  		from = time * 30 + ( minute / 60 ) * 30 - 90
+  		to = time * 30 + 270
+  	} else {
+  		from = time * 6 + ( second / 60 ) * 6 - 90
+  		to = time * 6 + 270
+  	}
     return '@-webkit-keyframes ' + pointer + '{'
       + 'from {'
-      + '-webkit-transform: rotate(' + ( time * 6 - 90 )  + 'deg)'
+      + '-webkit-transform: rotate(' + from + 'deg)'
       + '}'
       + 'to {'
-      + '-webkit-transform: rotate(' + ( time * 6 + 270 ) + 'deg)'
+      + '-webkit-transform: rotate(' + to + 'deg)'
       + '}'
     + '}'
   }
