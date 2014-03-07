@@ -3,6 +3,30 @@
 <head>
 <meta charset="UTF-8">
 <title>Clock in pure CSS3</title>
+<script type="text/javascript">
+!(function( document ){
+  var now = new Date()
+  var hour = now.getHours()
+  var minute = now.getMinutes()
+  var second = now.getSeconds()
+  var getKF = function( time, pointer ){
+    return '@-webkit-keyframes ' + pointer + '{'
+      + 'from {'
+      + '-webkit-transform: rotate(' + ( time * 6 - 90 )  + 'deg)'
+      + '}'
+      + 'to {'
+      + '-webkit-transform: rotate(' + ( time * 6 + 270 ) + 'deg)'
+      + '}'
+    + '}'
+  }
+
+  var style = document.createElement( 'style' )
+  style.type = 'text/css'
+  style.innerHTML = getKF( hour, 'hour' ) + getKF( minute, 'minute' ) + getKF( second, 'second' )
+  document.getElementsByTagName( 'head' )[ 0 ].appendChild( style )
+
+}( document ))
+</script>
 <style type="text/css">
 body{
   margin: 0;
@@ -103,8 +127,8 @@ div.hour{
 
 <body>
 <h1>CSS3+JS实现的简易时钟</h1>
-<small><a target="blank" href="http://t.cn/8FF80rR">Learnfrom</a></small>
-<small><a target="blank" href="http://t.cn/8Fs7Vzm">StyleFrom</a></small>
+<small><a target="blank" href="http://t.cn/8FF80rR">Learn from</a></small>
+<small><a target="blank" href="http://t.cn/8Fs7Vzm">Style from</a></small>
 <div class="clock">
   <div class="clock-inner">
     <em>III</em>
@@ -116,29 +140,5 @@ div.hour{
     <div class="second"></div>
   </div>
 </div>
-<script type="text/javascript">
-!(function( document ){
-  var now = new Date()
-  var hour = now.getHours()
-  var minute = now.getMinutes()
-  var second = now.getSeconds()
-  var getKF = function( time, pointer ){
-    return '@-webkit-keyframes ' + pointer + '{'
-      + 'from {'
-      + '-webkit-transform: rotate(' + ( time * 6 - 90 )  + 'deg)'
-      + '}'
-      + 'to {'
-      + '-webkit-transform: rotate(' + ( time * 6 + 270 ) + 'deg)'
-      + '}'
-    + '}'
-  }
-
-  var style = document.createElement( 'style' )
-  style.type = 'text/css'
-  style.innerHTML = getKF( hour, 'hour' ) + getKF( minute, 'minute' ) + getKF( second, 'second' )
-  document.getElementsByTagName( 'head' )[ 0 ].appendChild( style )
-
-}( document ))
-</script>
 </body>
 </html>
