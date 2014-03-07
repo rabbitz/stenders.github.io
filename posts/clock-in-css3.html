@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Clock in pure CSS3</title>
+<style type="text/css">
+body{
+  margin: 0;
+  font: bold 24px/1 "Microsoft Yahei";
+  text-align: center;
+}
+.clock,.clock-inner,.second:before,.second:after{
+  border-radius: 50%;
+}
+.clock{
+  border: 1px solid #ebebe0;
+  width: 300px;
+  height: 300px;
+  margin: 100px auto;
+}
+.clock-inner{
+  background: #ebebe0;
+  box-shadow: inset 1px 1px 2px #000;
+  width: 280px;
+  height: 280px;
+  margin: 10px auto;
+  position: relative;
+}
+em{
+  font-style: normal;
+  font-weight: bold;
+  font-family: digital;
+  text-shadow: 1px 1px 2px #000;
+  position: absolute;
+}
+em:nth-child(1){
+  left: 255px;
+  top: 128px;
+}
+em:nth-child(2){
+  left: 129px;
+  top: 254px;
+}
+em:nth-child(3){
+  left: 10px;
+  top: 128px;
+}
+em:nth-child(4){
+  left: 128px;
+  top: 10px;
+}
+.clock-inner div{
+  border: 2px solid;
+  height: 0px;
+  position: absolute;
+  left: 120px;
+}
+div.second{
+  width: 130px;
+  border-color: rgb(212,0,0);
+  top: 137px;
+  -webkit-transform-origin: 20px 2px;
+  -webkit-animation: second infinite linear 60s;
+}
+.second:before{
+  background: #fff;
+  position: absolute;
+  content: ' ';
+  display: block;
+  width: 10px;
+  height: 10px;
+  left: 12px;
+  top: -5px;
+}
+.second:after{
+  background: rgb(212,0,0);
+  position: absolute;
+  content: ' ';
+  display: block;
+  width: 20px;
+  height: 20px;
+  right: -10px;
+  top: -10px;
+}
+div.minute{
+  width: 110px;
+  border-width: 5px;
+  border-color: rgb(42,42,42);
+  top: 134px;
+  -webkit-transform-origin: 20px 5px;
+  -webkit-animation: minute infinite linear 3600s;
+}
+div.hour{
+  width: 90px;
+  border-width: 6px;
+  border-color: rgb(35,35,35);
+  top: 133px;
+  -webkit-transform-origin: 20px 6px;
+  -webkit-animation: hour infinite linear 43200s;
+}
+</style>
+</head>
+
+<body>
+<h1>CSS3+JS实现的简易时钟</h1>
+<small><a target="blank" href="http://t.cn/8FF80rR">Learnfrom</a></small>
+<small><a target="blank" href="http://t.cn/8Fs7Vzm">StyleFrom</a></small>
+<div class="clock">
+  <div class="clock-inner">
+    <em>III</em>
+    <em>VI</em>
+    <em>IX</em>
+    <em>XII</em>
+    <div class="hour"></div>
+    <div class="minute"></div>
+    <div class="second"></div>
+  </div>
+</div>
+<script type="text/javascript">
+!(function( document ){
+  var now = new Date()
+  var hour = now.getHours()
+  var minute = now.getMinutes()
+  var second = now.getSeconds()
+  var getKF = function( time, pointer ){
+    return '@-webkit-keyframes ' + pointer + '{'
+      + 'from {'
+      + '-webkit-transform: rotate(' + ( time * 6 - 90 )  + 'deg)'
+      + '}'
+      + 'to {'
+      + '-webkit-transform: rotate(' + ( time * 6 + 270 ) + 'deg)'
+      + '}'
+    + '}'
+  }
+
+  var style = document.createElement( 'style' )
+  style.type = 'text/css'
+  style.innerHTML = getKF( hour, 'hour' ) + getKF( minute, 'minute' ) + getKF( second, 'second' )
+  document.getElementsByTagName( 'head' )[ 0 ].appendChild( style )
+
+}( document ))
+</script>
+</body>
+</html>
