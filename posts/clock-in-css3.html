@@ -14,10 +14,13 @@
   	if(pointer === 'hour'){
   		from = time * 30 + ( minute / 60 ) * 30 - 90
   		to = time * 30 + 270
-  	} else {
+  	} else if( pointer === 'minute') {
   		from = time * 6 + ( second / 60 ) * 6 - 90
   		to = time * 6 + 270
-  	}
+  	} else {
+      from = time * 6 - 90
+      to = time * 6 + 270
+    }
     return '@-webkit-keyframes ' + pointer + '{'
       + 'from {'
       + '-webkit-transform: rotate(' + from + 'deg)'
@@ -61,17 +64,16 @@ body{
 em{
   font-style: normal;
   font-weight: bold;
-  font-family: digital;
   text-shadow: 1px 1px 2px #000;
   position: absolute;
 }
 em:nth-child(1){
-  left: 255px;
+  left: 246px;
   top: 128px;
 }
 em:nth-child(2){
-  left: 129px;
-  top: 254px;
+  left: 128px;
+  top: 246px;
 }
 em:nth-child(3){
   left: 10px;
@@ -83,7 +85,7 @@ em:nth-child(4){
 }
 .clock-inner div{
   border: 2px solid;
-  height: 0px;
+  height: 00;
   position: absolute;
   left: 120px;
 }
