@@ -33,7 +33,7 @@
 </blockquote>
 <p>在part 1里谈到了Backbone模型、集合和视图的基本用法和怎样使用绑定了集合的master视图渲染单个的联系人视图。</p>
 <p>这次来看下如何根据用户输入来显示特定的视图，和怎样添加一个路由，让应用程序能响应一些URL地址的功能。</p>
-<p>我们需要在part 1的基础上进行，如果没有读过part 1，强烈建议先<a href="http://stenders.github.io/posts/build-contact-manager-with-backbone.html">读一下</a>。</p>
+<p>我们需要在part 1的基础上进行，如果没有读过part 1，强烈建议先<a href="/posts/build-contact-manager-with-backbone-part-1.html">读一下</a>。</p>
 <h2>响应用户输入</h2>
 <p>可以你已经注意到了，在part 1里每条视图数据里都有一个<code>type</code>属性，它将数据按照朋友、家庭、同事等不同类型进行了分组。现在往master视图里增加一个选择框，以便于让用户能够根据这些属性来过滤查看数据。</p>
 <p>可以在HTML里硬编码进来一个选择菜单并手动添加各种不同的分组类型。但是这很不灵活：如果以后添加了新属性的数据怎么办？或者删除了某个类型的所有数据怎么办？我们的程序现在还没有添加和删除数据的功能（剧透下，part 3里会增加此功能），但是即使在程序前期，最好还是先考虑到这些情况。</p>
