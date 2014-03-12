@@ -37,7 +37,7 @@
 <h2>响应用户输入</h2>
 <p>可以你已经注意到了，在part 1里每条视图数据里都有一个<code>type</code>属性，它将数据按照朋友、家庭、同事等不同类型进行了分组。现在往master视图里增加一个选择框，以便于让用户能够根据这些属性来过滤查看数据。</p>
 <p>可以在HTML里硬编码进来一个选择菜单并手动添加各种不同的分组类型。但是这很不灵活：如果以后添加了新属性的数据怎么办？或者删除了某个类型的所有数据怎么办？我们的程序现在还没有添加和删除数据的功能（剧透下，part 3里会增加此功能），但是即使在程序前期，最好还是先考虑到这些情况。</p>
-<p>很容易就能根据现有的属性动态地创建一个选择框元素。现在先往前面的HTML里添加一小段代码；在联系人容器前面增加下面的代码：</p>
+<p>很容易就能根据现有的属性动态地创建一个选择框元素。现在先往前面的HTML里添加一小段代码；在联系人容器里面增加下面的代码：</p>
 <pre><code>&lt;header&gt;
   &lt;div id=&quot;filter&quot;&gt;
     &lt;label&gt;Show me:&lt;/label&gt;
@@ -52,7 +52,7 @@
 },
 
 createSelect: function () {
-  var filter = this.el.find(&quot;#filter&quot;),
+  var filter = this.$el.find(&quot;#filter&quot;),
     select = $(&quot;&lt;select/&gt;&quot;, {
       html: &quot;&lt;option value=&#39;all&#39;&gt;All&lt;/option&gt;&quot;
     });
@@ -74,12 +74,12 @@ createSelect: function () {
 <p>master视图的容器被缓存到了<code>$el</code>属性里，这个属性是Backbone自动添加到视图里的。所以用它来找到上面新添加的过滤容器后，再将<code>&lt;select&gt;</code>元素添加到它里面。</p>
 <p>现在再运行页面后，就能看到一个新的<code>&lt;select&gt;</code>元素，所有联系人的类型也都在里面。</p>
 <h2>过滤视图</h2>
-<p>现在该给<code>&lt;select&gt;</code>元素添加过滤功能了。为了做到这一点，就用到了master视图的<code>events</code>属性来给UI添加事件处理。将下面的代码添加到<code>renderSelect()</code>方法下面：</p>
+<p>现在该给<code>&lt;select&gt;</code>元素添加过滤功能了。为了做到这一点，就用到了master视图的<code>events</code>属性来给UI添加事件处理。将下面的代码添加到<code>renderContact()</code>方法下面：</p>
 <pre><code class="lang-javascript">events: {
   &#39;change #filter select&#39;: &#39;setFilter&#39;
 }</code></pre>
-<pre><code class="lang-events```属性接受一个键值对```key:value```对象，键值对里注明了事件的类型和要绑定事件的选择器。这里我们感兴趣的事件是在```#filter```容器里的```<select>```元素的```change```事件。键值对对象的属性值是要被绑定的事件处理函数。这里就是```setFilter```：">```javascript
-setFilter: function(e){
+<p>这里的<code>events</code>属性接受一个键值对<code>key:value</code>对象，键值对里注明了事件的类型和要绑定事件的选择器。这里我们感兴趣的事件是在<code>#filter</code>容器里的<code>&lt;select&gt;</code>元素的<code>change</code>事件。键值对对象的属性值是要被绑定的事件处理函数。这里就是<code>setFilter</code>：</p>
+<pre><code class="lang-javascript">setFilter: function(e){
   this.filterType = e.currentTarget.value
   this.trigger(&#39;change:filterType&#39;)
 }</code></pre>
@@ -145,7 +145,7 @@ setFilter: function(e){
         })
     this.collection.reset(filtered)
 
-    contactsRouter.navigate(&#39;filter/&#39; + fiterType)
+    contactsRouter.navigate(&#39;filter/&#39; + filterType)
   }
 }</code></pre>
 <p>当用下拉框来选择切换显示数据时，URL会自动更新，用户可以将URL来添加书签或者分享URL，浏览器的向前和向后按钮也可以用来在不同状态之间导航。由于Backbone在v0.5版本里开始支持<code>pushState</code>接口，为了使程序能正常工作，服务器端需要能渲染被请求的页面，我们这里没有做这样的配置，因此只使用了标准的历史记录模块。</p>
