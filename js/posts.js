@@ -24,7 +24,7 @@
   }, false);
 
   goTop.addEventListener('click', function() {
-    return window.scrollTo(0);
+    return window.scrollTo(0, 0);
   }, false);
 
 }).call(this);
