@@ -12,14 +12,17 @@
   var getKF = function( time, pointer ){
     var from, to
     if (pointer === 'hour') {
-      from = time * 30 + ( minute / 60 ) * 30 - 90
-      to = time * 30 + 270
+    	time = ( time + minute / 60 ) * 30
+      from = time - 90
+      to = time + 360 - 90
     } else if ( pointer === 'minute') {
-      from = time * 6 + ( second / 60 ) * 6 - 90
-      to = time * 6 + 270
+    	time = ( time + second / 60 ) * 6
+      from = time - 90
+      to = time + 360 - 90
     } else {
-      from = time * 6 - 90
-      to = time * 6 + 270
+    	time = time * 6
+      from = time - 90
+      to = time + 360 - 90
     }
     return '@-webkit-keyframes ' + pointer + '{'
       + 'from {'
