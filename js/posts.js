@@ -28,3 +28,24 @@
   }, false);
 
 }).call(this);
+
+(function(window){
+  var articles = document.getElementsByTagName('article')
+  function changePage(){
+
+    var hash = window.location.hash.slice(1)
+    if(!hash) return
+    hash --
+    for (var i = articles.length; i--; ) {
+      articles[i].classList.add('hide')
+    }
+    if(articles[hash]){
+      articles[hash].classList.remove('hide')
+    } else {
+      articles[articles.length - 1].classList.remove('hide')
+    }
+  }
+
+  window.addEventListener('hashchange', changePage)
+  window.addEventListener('DOMContentLoaded', changePage)
+}(this));

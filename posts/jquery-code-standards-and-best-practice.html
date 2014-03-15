@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="stylesheet" href="/css/bootstrap.css">
+  <link rel="stylesheet" href="/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="stylesheet" href="/css/index.css" />
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+  <nav class="container">
+    <ul class="nav nav-pills pull-right">
+      <li class="active"><a href="/">Home</a></li>
+      <!-- <li><a href="./resume.html">About</a></li> -->
+    </ul>
+    <h3 class="text-muted"><a href="/">砸牛顿的大苹果的果园</a></h3>
+  </nav>
+</header>
+<div class="container">
+  <div class="row marketing">
+
+<h1>jQuery代码规范与最佳实践</h1>
+<blockquote>
+<p>原文地址：<a href="http://lab.abhinayrathore.com/jquery-standards/"><a href="http://lab.abhinayrathore.com/jquery-standards/">http://lab.abhinayrathore.com/jquery-standards/</a></a></p>
+</blockquote>
+<p>以下书写jQuery代码的基本规范和最佳实践，这些不包括原生JS规范与最佳实践。如有问题或建议请移步<a href="http://web3o.blogspot.com/2014/03/jquery-coding-standards-and-best.html">原作者博客</a>留言讨论。</p>
+<h2>加载jQuery</h2>
+<p>1 尽量使用CDN加载。<a href="http://www.sitepoint.com/7-reasons-to-use-a-cdn/">使用CDN的优势</a></p>
+<pre><code>&lt;script type=&quot;text/javascript&quot; src=&quot;//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;window.jQuery || document.write(&#39;&lt;script src=&quot;js/jquery-1.11.0.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;\/script&gt;&#39;)&lt;/script&gt;</code></pre>
+<p><a href="http://lab.abhinayrathore.com/jquery-standards/?utm_source=javascriptweekly&amp;utm_medium=email#jQueryCND">这里</a>有一些流行的CDN列表。</p>
+<p>2 使用本地同版本的jQuery库作备用。<a href="http://css-tricks.com/snippets/jquery/fallback-for-cdn-hosted-jquery/">更多信息</a></p>
+<p>3 像第一条那样的，使用不带协议头的URL路径（去掉<code>http:</code>或者<code>https</code>）</p>
+<p>4 如果有条件，将所有JS文件放在页面底部。<a href="http://developer.yahoo.com/blogs/ydn/high-performance-sites-rule-6-move-scripts-bottom-7200.html">更多信息</a>还有<a href="https://github.com/h5bp/html5-boilerplate/blob/master/index.html">HTML5 模版</a></p>
+<p>5 使用什么版本的jQuery？</p>
+  <ul>
+  <li> 如需支持IE6/7/8则不要选择2.x版本</li>
+  <li>  针对新的web应用，不考虑兼容性等，则优先使用最新版本</li>
+    <li> 当从CDN加载jQuery时，总是写全版本号（例如：1.11.0 而不是1.11或只写1）</li>
+   <li> 不要加载多个不同版本jQuery</li>
+  </ul>
+<p>6 如果在同时使用其他如Prototype，MooTools，Zepto等一些同样在使用<code>$</code>符号的库时，不要使用<code>$</code>去调用jQuery方法，而是只使用jQuery。可以通过调用<code>$.noConflict()</code>将<code>$</code>的使用权交给其他库。</p>
+<p>7 如果要检测更高级的浏览器特性，建议使用<a href="http://modernizr.com/">Modernizr</a>。</p>
+<h2>jQuery变量</h2>
+<p>1 所有使用或缓存jQuery对象的变量应该以<code>$</code>开头。</p>
+<p>2 始终将jQuery选择器返回的对象缓存到本地变量中以复用。</p>
+<pre><code class="lang-javascript">  var $myDiv = $(&quot;#myDiv&quot;);
+  $myDiv.click(function(){....});</code></pre>
+<p>3 使用<a href="http://en.wikipedia.org/wiki/CamelCase">峰驼式</a>命名变量</p>
+<h2>选择器</h2>
+<p>1 ID选择器可用时就使用ID选择,它在内部使用<code>document.getElementById()</code>。</p>
+<p>2 当使用类/伪类选择器时，总是给选择器附上元素类型来避免扫描整个DOM树。</p>
+<pre><code class="lang-javascript">  // BAD 在整个DOM树中扫描&quot;products&quot;类名
+var $products = $(&quot;.products&quot;);
+
+// GOOD 只在DIV元素中扫描&quot;products&quot;类名
+var $products = $(&quot;div.products&quot;);</code></pre>
+<p>3 在ID &gt; 子节点层级选择器中使用<code>find()</code>方法。因为前半部分选择器没使用到Sizzle选择器引擎来查找元素。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">  // BAD, Sizzle选择器引擎查找层级
+  var $productIds = $(&quot;#products div.id&quot;);
+
+  // GOOD, 只有div.id走Sizzle选择器引擎
+  var $productIds = $(&quot;#products&quot;).find(&quot;div.id&quot;);</code></pre>
+<p>4 选择器后半部分比前半部分明确。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">// 未优化
+$(&quot;div.data .gonzalez&quot;);
+
+// 优化
+$(&quot;.data td.gonzalez&quot;);</code></pre>
+<p>5 避免冗余选择器。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">$(&quot;.data table.attendees td.gonzalez&quot;);
+
+// Better: 有必要时要去掉中间不必要的内容
+$(&quot;.data td.gonzalez&quot;);</code></pre>
+<p>6 给选择器添加上下文。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">// 要扫描整个DOM树寻找
+$(&#39;.class&#39;);
+
+// 只在#class-container里扫描
+$(&#39;.class&#39;, &#39;#class-container&#39;);</code></pre>
+<p>7 避免使用通配符选择器。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">$(&#39;div.container &gt; *&#39;); // BAD
+$(&#39;div.container&#39;).children(); // BETTER</code></pre>
+<p>8 避免使用隐式通配选择器。当省略下面的input时，会隐式的使用通配符选择器。<a href="http://learn.jquery.com/performance/optimize-selectors/">更多信息</a></p>
+<pre><code class="lang-javascript">$(&#39;div.someclass :radio&#39;); // BAD
+$(&#39;div.someclass input:radio&#39;); // GOOD</code></pre>
+<p>9 ID选择器使用的是<code>document.getElementById()</code>，ID选择器无需嵌套ID。</p>
+<pre><code class="lang-javascript">$(&#39;#outer #inner&#39;); // BAD
+$(&#39;div#inner&#39;); // BAD
+$(&#39;.outer-container #inner&#39;); // BAD
+$(&#39;#inner&#39;); // GOOD</code></pre>
+<h2>DOM操作</h2>
+<p>1 始终先detach现有DOM元素后进行操作，随后将其attach到DOM中。</p>
+<pre><code class="lang-javascript">var $myList = $(&quot;#list-container &gt; ul&quot;).detach();
+//...针对$myList的许多DOM操作
+$myList.appendTo(&quot;#list-container&quot;);</code></pre>
+<p>2 使用字符串连接或者<code>array.join()</code>而不是<code>.append()</code>方法。<a href="http://learn.jquery.com/performance/append-outside-loop/">更多信息</a> <a href="http://jsperf.com/jquery-append-vs-string-concat">性能对比</a></p>
+<pre><code class="lang-javascript">// BAD
+var $myList = $(&quot;#list&quot;);
+for(var i = 0; i &lt; 10000; i++){
+    $myList.append(&quot;&lt;li&gt;&quot;+i+&quot;&lt;/li&gt;&quot;);
+}
+
+// GOOD
+var $myList = $(&quot;#list&quot;);
+var list = &quot;&quot;;
+for(var i = 0; i &lt; 10000; i++){
+    list += &quot;&lt;li&gt;&quot;+i+&quot;&lt;/li&gt;&quot;;
+}
+$myList.html(list);
+
+// EVEN FASTER
+var array = []; 
+for(var i = 0; i &lt; 10000; i++){
+    array[i] = &quot;&lt;li&gt;&quot;+i+&quot;&lt;/li&gt;&quot;; 
+}
+$myList.html(array.join(&#39;&#39;));</code></pre>
+<p>3 不操作未知元素。<a href="http://learn.jquery.com/performance/dont-act-on-absent-elements/">更多信息</a></p>
+<pre><code class="lang-javascript">// BAD: 这个函数内部要先执行3个函数，才发现选择器选择到的可能是空内容
+$(&quot;#nosuchthing&quot;).slideUp();
+
+// GOOD
+var $mySelection = $(&quot;#nosuchthing&quot;);
+if ($mySelection.length) {
+    $mySelection.slideUp();
+}</code></pre>
+<h2>事件</h2>
+<p>1 每个页面只使用一个Document Ready函数。利于调试。</p>
+<p>2 不要使用匿名函数绑定事件。匿名函数不利于调试、维护、测试和复用。<a href="http://learn.jquery.com/code-organization/beware-anonymous-functions/">更多信息</a></p>
+<pre><code class="lang-javascript">$(&quot;#myLink&quot;).on(&quot;click&quot;, function(){...}); // BAD
+
+// GOOD
+function myLinkClickHandler(){...}
+$(&quot;#myLink&quot;).on(&quot;click&quot;, myLinkClickHandler);</code></pre>
+<p>3 Document ready函数不应该是匿名函数。匿名函数不能复用也无法对其测试。</p>
+<pre><code class="lang-javascript">$(function(){ .. }); // BAD: 不容易复用也不利于测试
+
+// GOOD
+$(initPage); // or $(document).ready(initPage);
+function initPage(){
+  // Document ready里可以初始化变量和调用其他初始化函数
+}</code></pre>
+<p>4 Document ready函数应该放在外部文件里，在其他初始化设置之后，在行内JS里调用这些函数。</p>
+<pre><code class="lang-`">&lt;script src=&quot;my-document-ready.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+  // 任何其他需要设置的全局变量
+  $(document).ready(initPage); // or $(initPage);
+&lt;/script&gt;</code></pre>
+<p>5 不要在HTML文件里添加行为（行内JS），这是调试的噩梦。始终使用jQuery绑定事件后面会很容易去解绑事件。</p>
+<pre><code>&lt;a id=&quot;myLink&quot; href=&quot;#&quot; onclick=&quot;myEventHandler();&quot;&gt;my link&lt;/a&gt; &lt;!-- BAD --&gt;</code></pre>
+<pre><code class="lang-javascript">$(&quot;#myLink&quot;).on(&quot;click&quot;, myEventHandler); // GOOD</code></pre>
+<p>6 如有需要，对事件使用自定义<a href="http://api.jquery.com/event.namespace/">命名空间</a>。这有利于去解绑某DOM元素上特定的事件而不会影响到该DOM元素上的其他事件。</p>
+<pre><code class="lang-javascript">$(&quot;#myLink&quot;).on(&quot;click.mySpecialClick&quot;, myEventHandler); // GOOD
+// 后面会很容易的解绑这个特定的点击事件
+$(&quot;#myLink&quot;).unbind(&quot;click.mySpecialClick&quot;);</code></pre>
+<h2>Ajax</h2>
+<p>1 避免使用<code>.getJSON()</code>和<code>.get()</code>，只使用<code>$.ajax()</code>，前两者都是在内部使用的后者。</p>
+<p>2 不要在<code>https</code>的网站上使用<code>http</code>请求。侧重无模式的url（在URL上去掉http/https）。</p>
+<p>3 不要把请求参数放在URL里，而是放在data对象里去。</p>
+<pre><code class="lang-javascript">// 不可读
+$.ajax({
+    url: &quot;something.php?param1=test1&amp;param2=test2&quot;,
+    ....
+});
+
+// 可读
+$.ajax({
+    url: &quot;something.php&quot;,
+    data: { param1: test1, param2: test2 }
+});</code></pre>
+<p>4 明确设置数据的类型<code>dataType</code>，这样很容易知道当前正在处理什么样的数据。（见下面的Ajax模版例子）</p>
+<p>5 对Ajax加载的DOM元素绑定事件时尽量使用事件代理。事件代理的优势是对于Ajax后来添加到DOM的元素也能响应事件。<a href="http://api.jquery.com/on/#direct-and-delegated-events">更多信息</a></p>
+<pre><code class="lang-javascript">$(&quot;#parent-container&quot;).on(&quot;click&quot;, &quot;a&quot;, delegatedClickHandlerForAjax);</code></pre>
+<p>6 使用Promise</p>
+<pre><code class="lang-javascript">$.ajax({ ... }).then(successHandler, failureHandler);
+
+// OR
+var jqxhr = $.ajax({ ... });
+jqxhr.done(successHandler);
+jqxhr.fail(failureHandler);</code></pre>
+<p>7 Ajax模版代码：</p>
+<pre><code class="lang-javascript">var jqxhr = $.ajax({
+  url: url,
+  type: &quot;GET&quot;,      // 默认值GET，可根据需要配置
+  cache: true,      // 默认值true, dataType是&#39;script&#39;或&#39;jsonp&#39;时为false，可根据需要配置
+  data: {},         // 请求参数对象
+  dataType: &quot;json&quot;, // 设置数据类型
+  jsonp: &quot;callback&quot;,// 只在操作JSONP时设置此项
+  statusCode: {     // 针对特定错误码的回调处理函数
+    404: handler404,
+    500: handler500
+  }
+});
+jqxhr.done(successHandler);
+jqxhr.fail(failureHandler);</code></pre>
+<h2>效果和动画</h2>
+<p>1 采用统一的动画实现方式。</p>
+<p>2 不要过度使用动画效果，除非追求用户体验。
+  <em> 尽量使用简单的show/hide/toggle/slideUp/slideDown方法来显示隐藏元素。
+  </em> 尽量使用预定义的动画时间间隔：<code>slow</code>,<code>fast</code>或<code>400</code></p>
+<h2>插件</h2>
+<p>1 始终选择有良好维护、优秀文档、良好测试和社区支持的插件。</p>
+<p>2 细心检查该插件与正在使用的jQuery版本的兼容性。</p>
+<p>3 任何通用的组件都应该抽取成jQuery插件。<a href="http://stenders.github.io/template/jquery.plugin.js">这里</a>有jQuery插件的模版代码。</p>
+<h2>链式写法</h2>
+<p>1 尽量使用链式写法而不是用变量缓存或者多次调用选择器方法。</p>
+<pre><code class="lang-javascript">$(&quot;#myDiv&quot;).addClass(&quot;error&quot;).show();</code></pre>
+<p>2 当链式写法超过三次或者因为事件绑定变得复杂后，使用换行和缩进保持代码可读性。</p>
+<pre><code class="lang-javascript">$(&quot;#myLink&quot;)
+  .addClass(&quot;bold&quot;)
+  .on(&quot;click&quot;, myClickHandler)
+  .on(&quot;mouseover&quot;, myMouseOverHandler)
+  .show();</code></pre>
+<p>3 对于更长的链式调用，可接受用变量缓存一个中间对象。</p>
+<h2>其他原则</h2>
+<p>1 参数尽量使用对象字面量。</p>
+<pre><code class="lang-javascript">$myLink.attr(&quot;href&quot;, &quot;#&quot;).attr(&quot;title&quot;, &quot;my link&quot;).attr(&quot;rel&quot;, &quot;external&quot;); // BAD
+// GOOD
+$myList.attr({
+    href: &quot;#&quot;,
+    title: &quot;my link&quot;,
+    rel: &quot;external&quot;
+});</code></pre>
+<p>2 不要把CSS混进jQuery。</p>
+<pre><code class="lang-javascript">$(&quot;#mydiv&quot;).css({&#39;color&#39;:red, &#39;font-weight&#39;:&#39;bold&#39;}); // BAD
+
+.error { color: red; font-weight: bold; } /* GOOD */
+$(&quot;#mydiv&quot;).addClass(&quot;error&quot;); // GOOD</code></pre>
+<p>3 不要使用遭弃用的方法。要一直看清楚哪些方法在某个新版本中被弃用了，<a href="http://api.jquery.com/category/deprecated/">这里</a>有被弃用的方法的列表。</p>
+<p>4 需要时可使用原生JS方法。下面两个例子的性能对比见<a href="http://jsperf.com/document-getelementbyid-vs-jquery/3">这里</a></p>
+<pre><code class="lang-javascript">$(&quot;#myId&quot;); // 还是慢了些
+document.getElementById(&quot;myId&quot;);</code></pre>
+<h2>其他资源：</h2>
+<p><a href="http://learn.jquery.com/performance/">jQuery Performance</a></p>
+<p><a href="http://learn.jquery.com">jQuery Learn</a></p>
+<p><a href="http://api.jquery.com/">jQuery API Docs</a></p>
+<p><a href="http://www.jameswiseman.com/blog/2010/04/20/jquery-standards-and-best-practice/">jQuery Coding Standards and Best Practice</a></p>
+<p><a href="http://stefangabos.ro/jquery/jquery-plugin-boilerplate-revisited/">jQuery Plugin Boilerplate</a></p>
+
+  </div>
+</div>
+<footer>
+  <div class="container">
+    <p>&copy; Stenders.github.io@2014</p>
+  </div>
+</footer>
+<a href="javascript:;" class="gotop"><i class="fa fa-arrow-circle-o-up"></i></a>
+<!-- <script type="text/javascript" src="/js/jquery-1.10.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script> -->
+<script type="text/javascript" src="/js/posts.js"></script>
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F062a4b4393b5b26e1db637b7504e8737' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>
