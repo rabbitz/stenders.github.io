@@ -1,7 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Clock in pure CSS3</title>
 <script type="text/javascript">
 !(function( document ){
@@ -12,15 +14,15 @@
   var getKF = function( time, pointer ){
     var from, to
     if (pointer === 'hour') {
-    	time = ( time + minute / 60 ) * 30
+      time = ( time + minute / 60 ) * 30
       from = time - 90
       to = time + 360 - 90
     } else if ( pointer === 'minute') {
-    	time = ( time + second / 60 ) * 6
+      time = ( time + second / 60 ) * 6
       from = time - 90
       to = time + 360 - 90
     } else {
-    	time = time * 6
+      time = time * 6
       from = time - 90
       to = time + 360 - 90
     }
@@ -138,9 +140,20 @@ div.hour{
   -webkit-animation: hour infinite linear 43200s;
 }
 </style>
+<link rel="stylesheet" type="text/css" href="/css/style.css">
 </head>
-
 <body>
+<header>
+  <nav class="clearfix">
+    <h3 class="pull-left text-muted"><a href="/">砸牛顿的大苹果的果园</a></h3>
+    <ul class="nav nav-pills pull-right">
+      <li class="active"><a href="/">Home</a></li>
+      <!-- <li><a href="./resume.html">About</a></li> -->
+    </ul>
+  </nav>
+</header>
+<div>
+    
 <h1>CSS3+JS实现的简易时钟</h1>
 <small><a target="blank" href="http://t.cn/8FF80rR">Learn from</a></small>
 <small><a target="blank" href="http://t.cn/8Fs7Vzm">Style from</a></small>
@@ -155,5 +168,19 @@ div.hour{
     <div class="second"></div>
   </div>
 </div>
+
+</div>
+<footer>
+  <p>&copy; Stenders.github.io@2014</p>
+</footer>
+<a href="javascript:;" class="gotop"><i class="fa fa-arrow-circle-o-up"></i></a>
+<!-- <script type="text/javascript" src="/js/jquery-1.10.min.js"></script>
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/main.js"></script>
+<script type="text/javascript" src="/js/posts.js"></script> -->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F062a4b4393b5b26e1db637b7504e8737' type='text/javascript'%3E%3C/script%3E"));
+</script>
 </body>
 </html>
