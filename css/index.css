@@ -20,7 +20,7 @@ header h3 {
 }
 footer {
   background: #272322;
-  padding-top: 19px;
+  padding-top: 15px;
   color: #fff;
   border-top: 1px solid #e5e5e5;
   font: bold 1em "Arial";
@@ -85,4 +85,8 @@ h1,h2,h3,h4{
 }
 p{
   font: 14px/2 "Microsoft Yahei";
+}
+h2 a:hover,h3 a:hover{
+  text-decoration: none;
+  border-bottom: 3px solid #005580;
 }
