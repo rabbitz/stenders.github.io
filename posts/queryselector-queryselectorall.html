@@ -18,12 +18,12 @@
     </ul>
   </nav>
 </header>
-<div>
+<article>
     
     <h1>HTML5 两个新增的API笔记</h1>
 <h3>1.<code>querySelector</code>和<code>querySelectorAll</code>方法</h3>
 <p>HTML5中新增了两个DOM选择器 <code>querySelector</code> 和 <code>querySelectorAll</code> 。他们的选择效率问题有大牛们专门对它们跟其他选择器<code>getElementsByTagName</code>和 <code>getElementsByClassName</code> 等做过<a href="https://speakerdeck.com/lijing00333/css-selector-performance">对比</a>。</p>
-<p><code>querySelector</code>和<code>querySelectorAll</code>的用法，即接收的参数几乎和<a href="http://jquery.com/">jQuery</a>的<code>$()</code>选择器没什么两样， 支持<code>&#39;div&#39;</code>,<code>&#39;#id&#39;</code>,<code>&#39;.class&#39;</code>,<code>&#39;[attr=value]&#39;</code>等。它们两者之间的差异也是很明显的，前者返回的是第一个匹配的节点；后者返回的是所有匹配到的<code>nodeList</code>，这与<code>getElementsByTagName</code>的返回值类型相同。它们都可以用方括号方式读取其中的每个值，同样也可以用<code>item</code>来读取。它们也都有<code>length</code>属性，但它们都不是真正的数组，当然也不具有数组的特有的方法（比如<code>push</code>，<code>sort</code>等），这点与jQuery的返回值类似。比如：</p>
+<p><code>querySelector</code>和<code>querySelectorAll</code>的用法，即接收的参数几乎和<a href="http://jquery.com/">jQuery</a>的<code>$()</code>选择器没什么两样， 支持<code>&#39;div&#39;</code>,<code>&#39;#id&#39;</code>,<code>&#39;.class&#39;</code>, <code>&#39;[attr=value]&#39;</code>等。它们两者之间的差异也是很明显的，前者返回的是第一个匹配的节点；后者返回的是所有匹配到的<code>nodeList</code>，这与<code>getElementsByTagName</code>的返回值类型相同。它们都可以用方括号方式读取其中的每个值，同样也可以用<code>item</code>来读取。它们也都有<code>length</code>属性，但它们都不是真正的数组，当然也不具有数组的特有的方法（比如<code>push</code>，<code>sort</code>等），这点与jQuery的返回值类似。比如：</p>
 <pre><code>var archor = document.querySelector(&#39;a&#39;);
 archor.className = &#39;reached&#39;;
 
@@ -87,7 +87,7 @@ if(typeof Array.prototype.every === &#39;undefined&#39;){
     };
 }</code></pre>
 
-</div>
+</article>
 <footer>
   <p>&copy; Stenders.github.io@2014</p>
 </footer>

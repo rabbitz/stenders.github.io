@@ -18,12 +18,12 @@
     </ul>
   </nav>
 </header>
-<div>
+<article>
     
     <h1>观察者模式--自定义事件模型详解</h1>
 <h2>缘由</h2>
 <p>自定义事件相当灵活，用途相当广，在攻城湿界备受恩宠。今天大苹果尝试着实现了一个简易的自定义事件模型，测试地址请围观：
-<a href="http://htmlhub.doorder.com/events/events.html">http://htmlhub.doorder.com/events/events.html</a>
+<a style="word-break: break-all;" href="http://htmlhub.doorder.com/events/events.html">http://htmlhub.doorder.com/events/events.html</a>
 代码结构相当简单，思路也相当清晰，就缺拍砖的了。
 我们的自定义事件对象有个高端大气上档次的名字：Events！</p>
 <h2>分析</h2>
@@ -223,7 +223,7 @@ var handler = function(num){
 ddd.on(&#39;someEvent&#39;, handler).trigger(&#39;someEvent&#39;, 1) // someEvent occured！1
 ddd.off(&#39;someEvent&#39;, handler).trigger(&#39;someEvent&#39;, 2) // 不再执行！</code></pre>
 
-</div>
+</article>
 <footer>
   <p>&copy; Stenders.github.io@2014</p>
 </footer>

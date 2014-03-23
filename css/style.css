@@ -301,6 +301,7 @@ sup {
 /*=== index ===*/
 body {
   padding-top: 20px;
+  margin: 0 auto;
 }
 header,
 .marketing,
@@ -397,6 +398,28 @@ section h2{
   .jumbotron {
     border-bottom: 0;
   }
+}
+@media screen and (max-width: 640px){
+  header{
+    padding: 0;
+  }
+  .nav{
+    display: none;
+  }
+  .hero-unit{
+    padding: 25px;
+  }
+  .hero-unit h1{
+    font-size: 28px;
+  }
+}
+@media screen and (max-width: 320px){
+  .clock{
+    margin-left: -22px;
+  }
+}
+blockquote{
+  word-break: break-all;
 }
 a img{display:none;}
 ::selection {
